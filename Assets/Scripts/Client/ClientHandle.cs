@@ -17,12 +17,14 @@ public class ClientHandle : MonoBehaviour
         ClientClientSide.instance.udp.Connect(((IPEndPoint)ClientClientSide.instance.tcp.socket.Client.LocalEndPoint).Port);
     }
 
-    public static void AddClientToLobby(PacketClientSide _packet)
+    public static void AddClient(PacketClientSide _packet)
     {
         int _clientId = _packet.ReadInt();
         string _clientUsername = _packet.ReadString();
+        Debug.Log("Add Client called with id " + _clientId);
 
         ClientClientSide.allClients.Add(_clientId, _clientUsername);
+        ClientClientSide.instance.lobby.InitLobbyUI();   
     }
 
     public static void SpawnPlayer(PacketClientSide _packet)
@@ -66,10 +68,15 @@ public class ClientHandle : MonoBehaviour
     public static void PlayerDisconnected(PacketClientSide _packet)
     {
         int _id = _packet.ReadInt();
+        Debug.Log("Client disconnected with id " + _id);
 
-        Destroy(GameManager.players[_id].gameObject);
-        GameManager.players.Remove(_id);
         ClientClientSide.allClients.Remove(_id);
+        ClientClientSide.instance.lobby.InitLobbyUI();
+        if (GameManager.players.TryGetValue(_id, out PlayerManager _playerManager))
+        {
+            Destroy(_playerManager.gameObject);
+            GameManager.players.Remove(_id);
+        }
         foreach(PlayerManager _player in GameManager.players.Values)
         {
             _player.playerUI.InitScoreBoard();

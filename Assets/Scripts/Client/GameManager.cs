@@ -72,8 +72,6 @@ public class GameManager : MonoBehaviour
         PlayerUI _playerUI = FindObjectOfType<PlayerUI>();
         if (_playerUI != null)
             _playerUI.InitScoreBoard();
-
-        
     }
 
     /// <summary>

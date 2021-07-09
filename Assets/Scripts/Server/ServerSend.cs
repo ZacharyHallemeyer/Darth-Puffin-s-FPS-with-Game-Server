@@ -87,7 +87,20 @@ public class ServerSend
         }
     }
 
-    //public static void LoadScene(int _to)
+    /// <summary>Sends a welcome message to the given client.</summary>
+    /// <param name="_toClient">The client to send the packet to.</param>
+    /// <param name="_msg">The message to send.</param>
+    public static void SendNewClient(int _toClient, ClientServerSide _client)
+    {
+        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.addClient))
+        {
+            _packet.Write(_client.id);
+            _packet.Write(_client.userName);
+
+            SendTCPData(_toClient, _packet);
+        }
+    }
+
 
     /// <summary>Tells a client to spawn a player.</summary>
     /// <param name="_toClient">The client that should spawn the player.</param>

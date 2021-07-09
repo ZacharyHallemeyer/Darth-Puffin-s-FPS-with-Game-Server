@@ -9,6 +9,7 @@ using UnityEngine;
 public enum ServerPackets
 {
     welcome = 1,
+    addClient,
     spawnPlayer,
     playerPosition,
     playerRotation,

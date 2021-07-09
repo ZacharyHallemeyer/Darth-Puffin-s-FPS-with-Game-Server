@@ -13,9 +13,13 @@ public class ServerHandle
         if (_fromClient != _clientIdCheck)
         {
             Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
+            return;
         }
-        Server.clients[_fromClient].SendIntoGame(_username);
-        //Server.clients[_fromClient].SendIntoLobby(_username);
+        //Server.clients[_fromClient].SendIntoGame(_username);
+        ClientServerSide _client = new ClientServerSide(_fromClient);
+        _client.userName = _username;
+        ClientServerSide.allClients.Add(_clientIdCheck, _client);
+        Server.clients[_fromClient].SendIntoLobby(_username);
     }
 
     public static void SendLobbyIntoGame(int _fromClient, PackerServerSide packet)

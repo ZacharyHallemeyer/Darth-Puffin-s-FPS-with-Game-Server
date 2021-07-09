@@ -21,6 +21,8 @@ public class ClientClientSide : MonoBehaviour
     private static Dictionary<int, PacketHandler> packetHandlers;
     public static Dictionary<int, string> allClients = new Dictionary<int, string>();
 
+    public Lobby lobby;
+
     private void Awake()
     {
         if (instance == null)
@@ -277,6 +279,7 @@ public class ClientClientSide : MonoBehaviour
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
             { (int)ServerPackets.welcome, ClientHandle.Welcome },
+            { (int)ServerPackets.addClient, ClientHandle.AddClient },
             { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
             { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
             { (int)ServerPackets.playerRotation, ClientHandle.PlayerRotation },

@@ -10,10 +10,13 @@ public class ClientServerSide
     public static int dataBufferSize = 4096;
 
     public int id;
-    public string playerName;
+    public string userName;
     public PlayerServerSide player;
     public TCP tcp;
     public UDP udp;
+
+    //public static Dictionary<int, string> allClients = new Dictionary<int, string>();
+    public static Dictionary<int, ClientServerSide> allClients = new Dictionary<int, ClientServerSide>();
 
     public ClientServerSide(int _clientId)
     {
@@ -211,8 +214,13 @@ public class ClientServerSide
 
     public void SendIntoLobby(string _playerName)
     {
-        playerName = _playerName;
-
+        userName = _playerName;
+        foreach(int _clientId in allClients.Keys)
+        {
+            ServerSend.SendNewClient(_clientId, this);
+            if(_clientId != id)
+                ServerSend.SendNewClient(id, allClients[_clientId]);
+        }
     }
 
     /// <summary>Sends the client into the game and informs other clients of the new player.</summary>
@@ -266,7 +274,7 @@ public class ClientServerSide
     {
         player = NetworkManager.instance.InstantiatePlayer();
         //player = InstantiateTools.instance.InstantiatePlayer();
-        player.Initialize(id, playerName);
+        player.Initialize(id, userName);
 
         // Send all players to the new player
         foreach (ClientServerSide _client in Server.clients.Values)
@@ -312,7 +320,8 @@ public class ClientServerSide
 
         ThreadManagerServerSide.ExecuteOnMainThread(() =>
         {
-            UnityEngine.Object.Destroy(player.gameObject);
+            if(player != null)
+                UnityEngine.Object.Destroy(player.gameObject);
             player = null;
         });
 
