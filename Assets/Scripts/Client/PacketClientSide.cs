@@ -42,13 +42,11 @@ public enum ServerPackets
 public enum ClientPackets
 {
     welcomeReceived = 1,
-    hostChangeGameMode,
-    hostStartGame,
-    playerJoinLobby,
+    startGame,
+    startGenerateEnvironment,
     playerMovement, 
     playerJetPackMovement,
     playerActions,
-    playerMagnetize,
     playerStartGrapple,
     playerContinueGrappling,
     playerStopGrapple,
@@ -57,7 +55,7 @@ public enum ClientPackets
     playerStopShoot,
     playerReload,
     playerSwitchWeapon,
-    playerThrowItem
+    playerMagnetize,
 }
 
 public class PacketClientSide : IDisposable

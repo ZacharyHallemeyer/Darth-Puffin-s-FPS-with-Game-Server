@@ -32,28 +32,22 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void HostChangeGameMode(string _sceneName)
+    public static void StartGame(string _gameModeName)
     {
-        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.hostChangeGameMode))
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.startGame))
         {
-            _packet.Write(_sceneName);
+            _packet.Write(_gameModeName);
 
             SendTCPData(_packet);
         }
     }
 
-    public static void StartGame()
+    public static void StartGenerateEnvironment()
     {
-        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.hostStartGame))
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.startGenerateEnvironment))
         {
-            SendTCPData(_packet);
-        }
-    }
+            _packet.Write(1);
 
-    public static void PlayerJoinLobby()
-    {
-        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerJoinLobby))
-        {
             SendTCPData(_packet);
         }
     }
@@ -173,16 +167,6 @@ public class ClientSend : MonoBehaviour
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerSwitchWeapon))
         {
-            SendTCPData(_packet);
-        }
-    }
-
-    public static void PlayerThrowItem(Vector3 _facing)
-    {
-        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerThrowItem))
-        {
-            _packet.Write(_facing);
-
             SendTCPData(_packet);
         }
     }

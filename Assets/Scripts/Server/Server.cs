@@ -128,9 +128,8 @@ public class Server
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
             { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
-            { (int)ClientPackets.hostChangeGameMode, ServerHandle.ChangeGameMode },
-            { (int)ClientPackets.hostStartGame, ServerHandle.SendLobbyIntoGame },
-            { (int)ClientPackets.playerJoinLobby, ServerHandle.SendLobbyIntoGame },
+            { (int)ClientPackets.startGame, ServerHandle.SendLobbyIntoGame },
+            { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironment },
             { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
             { (int)ClientPackets.playerJetPackMovement, ServerHandle.PlayerJetPackMovement },
             { (int)ClientPackets.playerActions, ServerHandle.PlayerActions },
@@ -138,11 +137,11 @@ public class Server
             { (int)ClientPackets.playerContinueGrappling, ServerHandle.PlayerContinueGrappling },
             { (int)ClientPackets.playerStopGrapple, ServerHandle.PlayerStopGrapple },
             { (int)ClientPackets.playerStartShoot, ServerHandle.PlayerStartShoot },
+            { (int)ClientPackets.playerUpdateShootDirection, ServerHandle.PlayerUpdateShootDirection },
             { (int)ClientPackets.playerStopShoot, ServerHandle.PlayerStopShoot },
             { (int)ClientPackets.playerReload, ServerHandle.PlayerReload },
             { (int)ClientPackets.playerSwitchWeapon, ServerHandle.PlayerSwitchWeapon },
             { (int)ClientPackets.playerMagnetize, ServerHandle.PlayerMagnetize },
-            { (int)ClientPackets.playerUpdateShootDirection, ServerHandle.PlayerUpdateShootDirection },
         };
         Debug.Log("Initialized packets.");
     }

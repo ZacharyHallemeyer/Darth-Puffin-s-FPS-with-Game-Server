@@ -21,7 +21,6 @@ public class ClientHandle : MonoBehaviour
     {
         int _clientId = _packet.ReadInt();
         string _clientUsername = _packet.ReadString();
-        Debug.Log("Add Client called with id " + _clientId);
 
         ClientClientSide.allClients.Add(_clientId, _clientUsername);
         ClientClientSide.instance.lobby.InitLobbyUI();   
@@ -68,7 +67,6 @@ public class ClientHandle : MonoBehaviour
     public static void PlayerDisconnected(PacketClientSide _packet)
     {
         int _id = _packet.ReadInt();
-        Debug.Log("Client disconnected with id " + _id);
 
         ClientClientSide.allClients.Remove(_id);
         ClientClientSide.instance.lobby.InitLobbyUI();

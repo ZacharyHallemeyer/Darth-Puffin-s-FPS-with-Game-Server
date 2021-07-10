@@ -107,6 +107,7 @@ public class ServerSend
     /// <param name="_player">The player to spawn.</param>
     public static void SpawnPlayer(int _toClient, PlayerServerSide _player, string _gunName)
     {
+        Debug.Log("Spawning  Player ...");
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.spawnPlayer))
         {
             _packet.Write(_player.id);
@@ -122,6 +123,7 @@ public class ServerSend
 
             SendTCPData(_toClient, _packet);
         }
+        Debug.Log("Spawning Player Done");
     }
 
     /// <summary>Sends a player's updated position to all clients.</summary>

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ServerHandle
 {
@@ -18,15 +19,18 @@ public class ServerHandle
         //Server.clients[_fromClient].SendIntoGame(_username);
         ClientServerSide _client = new ClientServerSide(_fromClient);
         _client.userName = _username;
-        ClientServerSide.allClients.Add(_clientIdCheck, _client);
+        ClientServerSide.allClients.Add(_fromClient, _client);
         Server.clients[_fromClient].SendIntoLobby(_username);
     }
 
-    public static void SendLobbyIntoGame(int _fromClient, PackerServerSide packet)
+    public static void SendLobbyIntoGame(int _fromClient, PackerServerSide _packet)
     {
-        foreach(ClientServerSide _client in Server.clients.Values)
+        string gameModeName = _packet.ReadString();
+
+        //foreach(ClientServerSide _client in Server.clients.Values)
+        foreach(ClientServerSide _client in ClientServerSide.allClients.Values)
         {
-            switch (NetworkManager.currentGameMode)
+            switch (gameModeName)
             {
                 case "FreeForAll":
                     _client.SendIntoGameFreeForAll();
@@ -52,12 +56,9 @@ public class ServerHandle
         }
     }
 
-    public static void ChangeGameMode(int _fromClient, PackerServerSide _packet)
+    public static void StartGenerateEnvironment(int _fromClient, PackerServerSide _packet)
     {
-        string gameModeName = _packet.ReadString();
-        NetworkManager.currentGameMode = gameModeName;
-
-        NetworkManager.instance.ChangeScene();
+        EnvironmentGeneratorServerSide.instance.StartCoroutine(EnvironmentGeneratorServerSide.instance.GenerateEnvironment());
     }
 
     public static void StartGameMode(int _fromClient, PackerServerSide packet)

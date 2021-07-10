@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class EnvironmentGeneratorServerSide : MonoBehaviour
 {
+    public static EnvironmentGeneratorServerSide instance;
+
     public static Dictionary<int, GameObject> planets = new Dictionary<int, GameObject>();
     public static Dictionary<int, GameObject> nonGravityObjectDict = new Dictionary<int, GameObject>();
     public static Dictionary<int, Vector3> spawnPoints = new Dictionary<int, Vector3>();
@@ -23,20 +25,40 @@ public class EnvironmentGeneratorServerSide : MonoBehaviour
     public GameObject planetBase;
     public GameObject[] nonGravityObjects;
 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Debug.Log("Instance already exists, destroying object!");
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
-        //SceneManager.LoadSceneAsync("Client", LoadSceneMode.Additive);
         BoundaryDistanceFromOrigin = Mathf.Max(new int[] {
                                         Mathf.Abs(minPositionX) + Mathf.Abs(maxPositionX),
                                         Mathf.Abs(minPositionY) + Mathf.Abs(maxPositionY),
                                         Mathf.Abs(minPositionZ) + Mathf.Abs(maxPositionZ)
                                         }) + 100;
         Random.InitState(Random.Range(0, 10000));
+        //StartCoroutine(GeneratePlanets());
+        //StartCoroutine(GenerateEnvironment());
+    }
+
+    public IEnumerator GenerateEnvironment()
+    {
         StartCoroutine(GeneratePlanets());
+        yield return new WaitForSeconds(2f);
     }
 
     private IEnumerator GeneratePlanets()
     {
+        Debug.Log("Generate Planets called");
         int _errorCatcher, _maxErrorCatcher = 10000,_planetCount = Random.Range(minPlanetCount, maxPlanetCount);
         float _planetScale; 
         Vector3 _planetPosition;
@@ -67,7 +89,8 @@ public class EnvironmentGeneratorServerSide : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
-        StartCoroutine(GenerateNonGravityObjects());
+        Debug.Log("Planets: " + planets.Count);
+        //StartCoroutine(GenerateNonGravityObjects());
     }
 
     private IEnumerator GenerateNonGravityObjects()

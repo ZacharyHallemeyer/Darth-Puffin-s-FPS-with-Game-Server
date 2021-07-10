@@ -38,11 +38,6 @@ public class NetworkManager : MonoBehaviour
         Server.Stop();
     }
 
-    public void ChangeScene()
-    {
-        SceneManager.LoadScene(currentGameMode);
-    }
-
     public PlayerServerSide InstantiatePlayer()
     {
         return Instantiate(playerPrefab, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<PlayerServerSide>();

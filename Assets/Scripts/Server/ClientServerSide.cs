@@ -223,58 +223,17 @@ public class ClientServerSide
         }
     }
 
-    /// <summary>Sends the client into the game and informs other clients of the new player.</summary>
-    /// <param name="_playerName">The username of the new player.</param>
-    public void SendIntoGame(string _playerName)
-    {
-        player = NetworkManager.instance.InstantiatePlayer();
-        //player = InstantiateTools.instance.InstantiatePlayer();
-        player.Initialize(id, _playerName);
-
-        // Send all players to the new player
-        foreach (ClientServerSide _client in Server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                if (_client.id != id)
-                {
-                    ServerSend.SpawnPlayer(id, _client.player, _client.player.currentGun.name);
-                    ServerSend.UpdatePlayerKillStats(_client.id, _client.player.currentKills);
-                    ServerSend.UpdatePlayerDeathStats(_client.id, _client.player.currentDeaths);
-                }
-            }
-        }
-
-        // Send the new player to all players (including himself)
-        foreach (ClientServerSide _client in Server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                ServerSend.SpawnPlayer(_client.id, player, player.currentGun.name);
-            }
-        }
-
-        // Send environment to new player
-        foreach (GameObject _planet in EnvironmentGeneratorServerSide.planets.Values)
-        {
-            ServerSend.CreateNewPlanet(id, _planet.transform.position, _planet.transform.localScale, Server.clients[id].player.gravityMaxDistance);
-        }
-        foreach(GameObject _object in EnvironmentGeneratorServerSide.nonGravityObjectDict.Values)
-        {
-            ServerSend.CreateNonGravityObject(id, _object.transform.position, _object.transform.localScale,
-                                              _object.transform.rotation , _object.name);
-        }
-
-        ServerSend.CreateBoundary(id, Vector3.zero, EnvironmentGeneratorServerSide.BoundaryDistanceFromOrigin);
-    }
 
     /// <summary>Sends the client into the game and informs other clients of the new player.</summary>
     /// <param name="_playerName">The username of the new player.</param>
     public void SendIntoGameFreeForAll()
     {
-        player = NetworkManager.instance.InstantiatePlayer();
+        Debug.Log("Send into game called");
         //player = InstantiateTools.instance.InstantiatePlayer();
+        player = NetworkManager.instance.InstantiatePlayer();
         player.Initialize(id, userName);
+        Server.clients[id].player = player;
+
 
         // Send all players to the new player
         foreach (ClientServerSide _client in Server.clients.Values)
@@ -283,6 +242,7 @@ public class ClientServerSide
             {
                 if (_client.id != id)
                 {
+                    Debug.Log("Spawn player called from first loop");
                     ServerSend.SpawnPlayer(id, _client.player, _client.player.currentGun.name);
                     ServerSend.UpdatePlayerKillStats(_client.id, _client.player.currentKills);
                     ServerSend.UpdatePlayerDeathStats(_client.id, _client.player.currentDeaths);
@@ -295,6 +255,7 @@ public class ClientServerSide
         {
             if (_client.player != null)
             {
+                Debug.Log("Spawn player called from second loop");
                 ServerSend.SpawnPlayer(_client.id, player, player.currentGun.name);
             }
         }
@@ -328,6 +289,7 @@ public class ClientServerSide
         tcp.Disconnect();
         udp.Disconnect();
 
+        allClients.Remove(id);
         ServerSend.PlayerDisconnect(id);
     }
 }

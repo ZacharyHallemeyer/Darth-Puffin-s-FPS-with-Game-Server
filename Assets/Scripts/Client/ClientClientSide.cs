@@ -36,7 +36,7 @@ public class ClientClientSide : MonoBehaviour
         }
 
         DontDestroyOnLoad(this);
-        ip = PlayerPrefs.GetString("IP", "127.0.0.1");
+        ip = PlayerPrefs.GetString("HostIP", "127.0.0.1");
         instance.ConnectToServer();
     }
 
