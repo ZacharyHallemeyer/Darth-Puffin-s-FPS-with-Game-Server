@@ -25,10 +25,11 @@ public class NetworkManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
+    // Starts server
     private void Start()
     {
         QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = 60;
 
         Server.Start(50, 26950);
     }
@@ -38,6 +39,7 @@ public class NetworkManager : MonoBehaviour
         Server.Stop();
     }
 
+    // Spawns player
     public PlayerServerSide InstantiatePlayer()
     {
         return Instantiate(playerPrefab, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<PlayerServerSide>();

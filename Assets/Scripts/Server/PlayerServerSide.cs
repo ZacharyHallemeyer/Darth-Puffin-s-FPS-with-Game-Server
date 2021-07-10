@@ -111,6 +111,11 @@ public class PlayerServerSide : MonoBehaviour
         grappleTimeLimiter = maxGrappleTime / 4;
     }
 
+    /// <summary>
+    /// Inits new player info
+    /// </summary>
+    /// <param name="_id"> Client id </param>
+    /// <param name="_username"> Client username </param>
     public void Initialize(int _id, string _username)
     {
         id = _id;
@@ -120,6 +125,9 @@ public class PlayerServerSide : MonoBehaviour
         SetGunInformation();
     }
 
+    /// <summary>
+    /// Sets gun information and stats for each possible weapon
+    /// </summary>
     public void SetGunInformation()
     {
         allGunInformation["Pistol"] = new GunInformation
@@ -261,6 +269,10 @@ public class PlayerServerSide : MonoBehaviour
         orientation.localRotation = _rotation;
     }
 
+    /// <summary>
+    /// Updates whether player is currently in an animation
+    /// </summary>
+    /// <param name="_isAnimInProgress"></param>
     public void SetActionInput(bool _isAnimInProgress)
     {
         isAnimInProgress = _isAnimInProgress;
@@ -279,7 +291,6 @@ public class PlayerServerSide : MonoBehaviour
         Collider[] _groundCollider = Physics.OverlapSphere(transform.position, groundDistance * 2, whatIsGround);
         rb.AddForce((_groundCollider[0].transform.position - transform.position) * gravityForce * 3 * Time.deltaTime);
 
-
         SendPlayerData();
     }
 
@@ -287,6 +298,10 @@ public class PlayerServerSide : MonoBehaviour
 
     #region JetPack
 
+    /// <summary>
+    /// Adds impulse force to player in the form of a powerful thrust
+    /// </summary>
+    /// <param name="_direction"> direction to add force </param>
     public void JetPackThrust(Vector3 _direction)
     {
         if (currentJetPackPower < jetPackBurstCost) return;
@@ -296,6 +311,10 @@ public class PlayerServerSide : MonoBehaviour
         SendPlayerData();
     }
 
+    /// <summary>
+    /// Adds impulse force to player in the form of a continuous force
+    /// </summary>
+    /// <param name="_direction"> direction to add force </param>
     public void JetPackMovement(Vector3 _direction)
     {
         if(isGrounded)
@@ -309,6 +328,9 @@ public class PlayerServerSide : MonoBehaviour
 
     #region Magnetize 
     
+    /// <summary>
+    /// Adds force to player to have player go to the nearest gravity relative to player
+    /// </summary>
     public void PlayerMagnetize()
     {
         rb.velocity = Vector3.zero;
@@ -317,6 +339,10 @@ public class PlayerServerSide : MonoBehaviour
         rb.AddForce((_desiredPosition - transform.position) * magnetizeForce * Time.deltaTime, ForceMode.Impulse);
     }
 
+    /// <summary>
+    /// Finds the nearest gravity object position
+    /// </summary>
+    /// <returns> a vector3 of the position of the nearest gravity object </returns>
     public Vector3 FindNearestGravityObjectPosition()
     {
         float _checkingDistance = 100, _errorCatcher = 0;
@@ -348,8 +374,12 @@ public class PlayerServerSide : MonoBehaviour
 
     #region Artificial Gravity
 
+    /// <summary>
+    /// Decides whether gravity should be applied and applies it
+    /// </summary>
     public void GravityController()
     {
+        // if player is beyond boundary. Add force to pull player to origin
         if (transform.position.magnitude > maxDistanceFromOrigin)
         {
             rb.AddForce(-transform.position.normalized * forceBackToOrigin * Time.deltaTime);
@@ -357,7 +387,7 @@ public class PlayerServerSide : MonoBehaviour
             return;
         }
 
-        if (IsGrappling) return;
+        if (IsGrappling) return;    // Do not apply gravity is player is grappling
 
         Transform[] _gravityObjects = FindGravityObjects();
 
@@ -365,12 +395,16 @@ public class PlayerServerSide : MonoBehaviour
         {
             if (_gravityObjects[i] != null)
             {
-                ApplyGravity(_gravityObjects[i]);
+                ApplyGravity(_gravityObjects[i]);   // Apply gravity for each gravity object in range
             }
         }
         SendPlayerData();
     }
 
+    /// <summary>
+    /// Finds the transforms of all gravity objects in gravityMaxDistance distance
+    /// </summary>
+    /// <returns>returns all the transforms of all gravity objects in gravityMaxDistance distance </returns>
     public Transform[] FindGravityObjects()
     {
         int index = 0;
@@ -386,15 +420,17 @@ public class PlayerServerSide : MonoBehaviour
         return _gravityObjects;
     }
 
-
+    /// <summary>
+    /// add force to player relative to _gravityObject position
+    /// </summary>
+    /// <param name="_gravityObject"> gravity object to pull player towards </param>
     public void ApplyGravity(Transform _gravityObject)
     {
         rb.AddForce((_gravityObject.position - transform.position) * gravityForce * Time.deltaTime);
 
-        // Rotate Player
         if (isGrounded )
         {
-            // Rotate Player
+            // Rotate Player to stand straight on gravity object
             Quaternion desiredRotation = Quaternion.FromToRotation(_gravityObject.up, -(_gravityObject.position - transform.position).normalized);
             desiredRotation = Quaternion.Lerp(transform.localRotation, desiredRotation, Time.deltaTime * 2);
             transform.localRotation = desiredRotation;
@@ -404,11 +440,15 @@ public class PlayerServerSide : MonoBehaviour
         lastOrientationRotation = orientation.localRotation;
     }
 
-
     #endregion
 
     #region Weapons
 
+    /// <summary>
+    /// Controls how player should shoot
+    /// </summary>
+    /// <param name="_firePoint"> player's current fire point </param>
+    /// <param name="_fireDirection"> player's current fire direction </param>
     public void ShootController(Vector3 _firePoint, Vector3 _fireDirection)
     {
         if (health <= 0) return;
@@ -426,17 +466,28 @@ public class PlayerServerSide : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates player fire point and fire direction
+    /// </summary>
+    /// <param name="_firePoint"> player's fire point </param>
+    /// <param name="_fireDirection"> player's fire direction </param>
     public void UpdateShootDirection(Vector3 _firePoint, Vector3 _fireDirection)
     {
         firePoint = _firePoint;
         fireDirection = _fireDirection;
     }
 
+    /// <summary>
+    /// Stops automatic shot
+    /// </summary>
     public void StopShootContoller()
     {
         StopAutomaticShoot();
     }
 
+    /// <summary>
+    /// Shoots a single raycast and damages if it hits anything that is damagable
+    /// </summary>
     public void SingleFireShoot()
     {
         isAnimInProgress = true;
@@ -450,9 +501,7 @@ public class PlayerServerSide : MonoBehaviour
         if (currentGun.currentAmmo <= 0)
         {
             if (currentGun.reserveAmmo > 0)
-            {
                 Reload();
-            }
         }
 
         if (currentGun.name == "Pistol")
@@ -465,8 +514,7 @@ public class PlayerServerSide : MonoBehaviour
                     _hit.collider.GetComponent<PlayerServerSide>().TakeDamage(id, currentGun.damage);
             }
         }
-        // shotgun
-        else
+        else     // Shotgun
         {
             Vector3 trajectory;
             for (int i = 0; i < 10; i++)
@@ -487,12 +535,13 @@ public class PlayerServerSide : MonoBehaviour
         if (currentGun.currentAmmo <= 0)
         {
             if (currentGun.reserveAmmo > 0)
-            {
                 Reload();
-            }
         }
     }
 
+    /// <summary>
+    /// Starts automatic fire w/ invoke repeating
+    /// </summary>
     public void StartAutomaticFire()
     {
         isShooting = true;
@@ -500,6 +549,9 @@ public class PlayerServerSide : MonoBehaviour
         InvokeRepeating("AutomaticShoot", 0f, currentGun.fireRate);
     }
 
+    /// <summary>
+    /// Shoots a single raycast and damages if it hits anything that is damagable
+    /// </summary>
     public void AutomaticShoot()
     {
         // Reduce accuracy by a certain value 
@@ -526,6 +578,9 @@ public class PlayerServerSide : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Stops automatic shoting with CancelInvoke
+    /// </summary>
     public void StopAutomaticShoot()
     {
         ServerSend.PlayerStopAutomaticFire(id);
@@ -533,6 +588,9 @@ public class PlayerServerSide : MonoBehaviour
         isShooting = false;
     }
 
+    /// <summary>
+    /// Reloads current weapon
+    /// </summary>
     public void Reload()
     {
         if (isShooting && currentGun.isAutomatic)
@@ -560,6 +618,9 @@ public class PlayerServerSide : MonoBehaviour
         ServerSend.PlayerReload(id, currentGun.currentAmmo, currentGun.reserveAmmo);
     }
 
+    /// <summary>
+    /// Switches current weapon
+    /// </summary>
     public void SwitchWeapon()
     {
         StopAutomaticShoot();
@@ -570,6 +631,7 @@ public class PlayerServerSide : MonoBehaviour
         secondaryGun = temp;
 
         ServerSend.PlayerSwitchWeapon(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
+        // Send to all clients this player has switched it weapon
         foreach(ClientServerSide _client in Server.clients.Values)
         {
             if (_client.player != null)
@@ -683,27 +745,11 @@ public class PlayerServerSide : MonoBehaviour
 
     #region Stats and Generic
 
-    public void TakeDamage(float _damage)
-    {
-        if (health <= 0)
-            return;
-
-        health -= _damage;
-
-        if (health <= 0)
-        {
-            health = 0;
-            currentDeaths++;
-            // Teleport to random spawnpoint
-            transform.position = EnvironmentGeneratorServerSide.spawnPoints[
-                                 Random.Range(0, EnvironmentGeneratorServerSide.spawnPoints.Count)];
-            ServerSend.PlayerPosition(this);
-            StartCoroutine(Respawn());
-        }
-
-        ServerSend.PlayerHealth(this);
-    }
-
+    /// <summary>
+    /// Take damage and update health and update stats
+    /// </summary>
+    /// <param name="_fromId"> Client that called this function </param>
+    /// <param name="_damage"> Value to subtract from health </param>
     public void TakeDamage(int _fromId, float _damage)
     {
         if (health <= 0)
@@ -728,6 +774,9 @@ public class PlayerServerSide : MonoBehaviour
         ServerSend.PlayerHealth(this);
     }
 
+    /// <summary>
+    /// Respawns player after 5 seconds
+    /// </summary>
     private IEnumerator Respawn()
     {
         yield return new WaitForSeconds(5f);
@@ -738,6 +787,9 @@ public class PlayerServerSide : MonoBehaviour
 
     #endregion
 
+    /// <summary>
+    /// Sends player position and rotation to all cleints
+    /// </summary>
     public void SendPlayerData()
     {
         ServerSend.PlayerPosition(this);

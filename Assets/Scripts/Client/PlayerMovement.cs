@@ -13,6 +13,11 @@ public class PlayerMovement : MonoBehaviour
 
     #region Set Up
 
+    /// <summary>
+    /// Inits player info
+    /// </summary>
+    /// <param name="_id"> Client id </param>
+    /// <param name="_maxJetPackTime"> Client max jet pack time </param>
     public void Initialize(int _id, float _maxJetPackTime)
     {
         id = _id;
@@ -66,6 +71,10 @@ public class PlayerMovement : MonoBehaviour
         ClientSend.PlayerMovement(_moveDirection);
     }
 
+    /// <summary>
+    /// Rotate player according to gravity on client side (for cleaner movement)
+    /// </summary>
+    /// <param name="_gravityObjectCollider"></param>
     public void RotatePlayerAccordingToGravity(Collider _gravityObjectCollider)
     {
         Transform _gravityObject = _gravityObjectCollider.transform;
@@ -76,6 +85,10 @@ public class PlayerMovement : MonoBehaviour
 
     #region Jetpack
 
+    /// <summary>
+    /// Set jet pack UI
+    /// </summary>
+    /// <param name="_jetPackTime"> player's current jet pack time </param>
     public void PlayerContinueJetPack(float _jetPackTime)
     {
         playerUI.SetJetPack(_jetPackTime);

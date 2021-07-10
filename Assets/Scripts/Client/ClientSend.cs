@@ -21,6 +21,9 @@ public class ClientSend : MonoBehaviour
     }
 
     #region Packets
+    /// <summary>
+    /// Send server client id and client username
+    /// </summary>
     public static void WelcomeReceived()
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.welcomeReceived))
@@ -32,6 +35,10 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Tell server to start game
+    /// </summary>
+    /// <param name="_gameModeName"> game mode name to start </param>
     public static void StartGame(string _gameModeName)
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.startGame))
@@ -42,6 +49,9 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Tell server to start spawning environment
+    /// </summary>
     public static void StartGenerateEnvironment()
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.startGenerateEnvironment))
@@ -78,6 +88,10 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to use jetpack 
+    /// </summary>
+    /// <param name="_direction"> direction to jetpack </param>
     public static void PlayerJetPackMovement(Vector3 _direction)
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerJetPackMovement))
@@ -88,6 +102,9 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to use magnetize
+    /// </summary>
     public static void PlayerMagnetize()
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerMagnetize))
@@ -96,6 +113,10 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to start grapple
+    /// </summary>
+    /// <param name="_direction"> direction to grapple </param>
     public static void PlayerStartGrapple(Vector3 _direction)
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerStartGrapple))
@@ -106,6 +127,11 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to continue grapple
+    /// </summary>
+    /// <param name="_position"> player positon </param>
+    /// <param name="_grapplePoint"> player grapple point </param>
     public static void PlayerContinueGrappling(Vector3 _position, Vector3 _grapplePoint)
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerContinueGrappling))
@@ -117,6 +143,9 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to stop grapple
+    /// </summary>
     public static void PlayerStopGrapple()
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerStopGrapple))
@@ -125,6 +154,11 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to start shooting
+    /// </summary>
+    /// <param name="_firePoint"> player's fire point </param>
+    /// <param name="_fireDirection"> player's fire direction </param>
     public static void PlayerStartShoot(Vector3 _firePoint, Vector3 _fireDirection)
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerStartShoot))
@@ -136,6 +170,11 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server current fire point and fire direction
+    /// </summary>
+    /// <param name="_firePoint"> player fire point </param>
+    /// <param name="_fireDirection"> player fire direction </param>
     public static void PlayerUpdateShootDirection(Vector3 _firePoint, Vector3 _fireDirection)
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerUpdateShootDirection))
@@ -147,6 +186,9 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to stop shooting
+    /// </summary>
     public static void PlayerStopShoot()
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerStopShoot))
@@ -154,7 +196,10 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }
     }
-
+    
+    /// <summary>
+    /// Send server info for player to reload
+    /// </summary>
     public static void PlayerReload()
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerReload))
@@ -163,6 +208,9 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Send server info for player to switch weapon
+    /// </summary>
     public static void PlayerSwitchWeapon()
     {
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerSwitchWeapon))

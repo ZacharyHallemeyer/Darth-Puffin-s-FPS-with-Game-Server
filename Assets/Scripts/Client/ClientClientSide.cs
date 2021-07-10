@@ -40,6 +40,9 @@ public class ClientClientSide : MonoBehaviour
         instance.ConnectToServer();
     }
 
+    /// <summary>
+    /// Disconnect from server
+    /// </summary>
     private void OnApplicationQuit()
     {
         Disconnect();
@@ -274,6 +277,9 @@ public class ClientClientSide : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Inits all client data from server
+    /// </summary>
     private void InitializeClientData()
     {
         packetHandlers = new Dictionary<int, PacketHandler>()

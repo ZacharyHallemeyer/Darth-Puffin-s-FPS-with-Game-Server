@@ -44,6 +44,11 @@ public class PlayerManager : MonoBehaviour
 
     #region Set Up
 
+    /// <summary>
+    /// Inits player
+    /// </summary>
+    /// <param name="_id"> Client id </param>
+    /// <param name="_username"> Client username </param>
     public void Initialize(int _id, string _username)
     {
         id = _id;
@@ -54,6 +59,9 @@ public class PlayerManager : MonoBehaviour
             enabled = false;
     }
 
+    /// <summary>
+    /// Sets up weapon information for all possible weapons
+    /// </summary>
     public void SetGunInformation()
     {
         allGunInformation["Pistol"] = new GunInformation
@@ -105,6 +113,10 @@ public class PlayerManager : MonoBehaviour
             playerUI.ScoreBoard();
     }
 
+    /// <summary>
+    /// Sets current health and calls die function if health is below zero
+    /// </summary>
+    /// <param name="_health"> current health </param>
     public void SetHealth(float _health)
     {
         health = _health;
@@ -115,6 +127,10 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Show other player take damage animation
+    /// </summary>
+    /// <param name="_otherPlayerId"> player that took damage id </param>
     public void OtherPlayerTakenDamage(int _otherPlayerId)
     {
         GameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = damagedPlayerMaterial;
@@ -126,17 +142,28 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitForSeconds(.5f); 
         GameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = basePlayerMaterial;
     }
+
+    /// <summary>
+    /// Destroys grapple rope for specific player 
+    /// </summary>
+    /// <param name="_otherPlayerId"> player to destroy rope </param>
     public void ClearOtherPlayerRope(int _otherPlayerId)
     {
         GameManager.players[_otherPlayerId].lineRenderer.positionCount = 0;
     }
 
+    /// <summary>
+    /// die animation
+    /// </summary>
     public void Die()
     {
         model.material.shader = deadPlayerShader;
         model.material = deadPlayerMaterial;
     }
 
+    /// <summary>
+    /// Respawn animation and set health
+    /// </summary>
     public void Respawn()
     {
         model.material.shader = basePlayerShader;

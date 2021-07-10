@@ -18,10 +18,11 @@ public class Lobby : MonoBehaviour
     public GameObject lobbyRowPrefab;
     public LobbyRow[] lobbyRows; 
 
+    /// <summary>
+    /// Adds a row of client info for each client
+    /// </summary>
     public void InitLobbyUI()
     {
-           
-        Time.timeScale = 1;
         float _yPos = 230f;
         if (lobbyRows != null)
         {
@@ -45,14 +46,19 @@ public class Lobby : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Starts current gamemode
+    /// </summary>
     public void StartGame()
     {
         string _sceneName = SceneManager.GetActiveScene().name;
         _sceneName = _sceneName.Substring(6);
         ClientSend.StartGame(_sceneName);
-        //ClientSend.StartGame("FreeForAll");
     }
 
+    /// <summary>
+    /// Unloads current scenes and load main menu
+    /// </summary>
     public void ExitGame()
     {
         for(int i = 0; i < SceneManager.sceneCount; i++)

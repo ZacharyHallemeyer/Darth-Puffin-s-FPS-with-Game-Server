@@ -228,7 +228,6 @@ public class ClientServerSide
     /// <param name="_playerName">The username of the new player.</param>
     public void SendIntoGameFreeForAll()
     {
-        Debug.Log("Send into game called");
         //player = InstantiateTools.instance.InstantiatePlayer();
         player = NetworkManager.instance.InstantiatePlayer();
         player.Initialize(id, userName);
@@ -242,7 +241,6 @@ public class ClientServerSide
             {
                 if (_client.id != id)
                 {
-                    Debug.Log("Spawn player called from first loop");
                     ServerSend.SpawnPlayer(id, _client.player, _client.player.currentGun.name);
                     ServerSend.UpdatePlayerKillStats(_client.id, _client.player.currentKills);
                     ServerSend.UpdatePlayerDeathStats(_client.id, _client.player.currentDeaths);
@@ -255,7 +253,6 @@ public class ClientServerSide
         {
             if (_client.player != null)
             {
-                Debug.Log("Spawn player called from second loop");
                 ServerSend.SpawnPlayer(_client.id, player, player.currentGun.name);
             }
         }

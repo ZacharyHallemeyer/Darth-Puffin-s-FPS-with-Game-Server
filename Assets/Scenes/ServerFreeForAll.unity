@@ -230,8 +230,8 @@ MonoBehaviour:
   maxPositionZ: 250
   planetMinScale: 10
   planetMaxScale: 30
-  minPlanetCount: 1
-  maxPlanetCount: 2
+  minPlanetCount: 10
+  maxPlanetCount: 15
   minPlanetDistance: 2
   maxPlanetDistance: 3
   nonGravityObjectMinScale: 500

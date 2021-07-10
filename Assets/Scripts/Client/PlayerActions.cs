@@ -56,6 +56,14 @@ public class PlayerActions : MonoBehaviour
 
     #region Set Up
 
+    /// <summary>
+    /// Inits new player
+    /// </summary>
+    /// <param name="_id"> Client id </param>
+    /// <param name="_gunName"> current gun name </param>
+    /// <param name="_currentAmmo"> current ammo </param>
+    /// <param name="_reserveAmmo"> current reserve ammo </param>
+    /// <param name="_maxGrappleTime"> max grapple time </param>
     public void Initialize(int _id, string _gunName, int _currentAmmo, int _reserveAmmo,
                            float _maxGrappleTime)
     {
@@ -85,6 +93,9 @@ public class PlayerActions : MonoBehaviour
         inputMaster.Disable();
     }
 
+    /// <summary>
+    /// Sets all gun information for all possible weapons
+    /// </summary>
     public void SetGunInformation()
     {
         allGunInformation["Pistol"] = new GunInformation
@@ -137,6 +148,7 @@ public class PlayerActions : MonoBehaviour
     private void Update()
     {
         timeSinceLastShoot += Time.deltaTime;
+        // Handle grapple
         if (!isGrappling)
         {
             if (inputMaster.Player.Grapple.ReadValue<float>() != 0 && releasedGrappleControlSinceLastGrapple)
@@ -189,6 +201,9 @@ public class PlayerActions : MonoBehaviour
         SendInputToServer();
     }
 
+    /// <summary>
+    /// Sends player action input to server 
+    /// </summary>
     public void SendInputToServer()
     {
         ClientSend.PlayerActions(isAnimInProgress);
@@ -196,6 +211,11 @@ public class PlayerActions : MonoBehaviour
 
     #region Guns
 
+    /// <summary>
+    /// Single fire animation start
+    /// </summary>
+    /// <param name="_currentAmmo"> current gun's current ammo </param>
+    /// <param name="_reserveAmmo"> current gun's reserve ammo </param>
     public void PlayerStartSingleFireAnim(int _currentAmmo, int _reserveAmmo)
     {
         isAnimInProgress = true;
@@ -206,6 +226,9 @@ public class PlayerActions : MonoBehaviour
         InvokeRepeating("PlayerSingleFireAnim", currentGun.fireRate, 0f);
     }
 
+    /// <summary>
+    /// Single fire animation stop
+    /// </summary>
     public void PlayerSingleFireAnim()
     {
         isAnimInProgress = false;
@@ -214,6 +237,11 @@ public class PlayerActions : MonoBehaviour
         CancelInvoke("PlayerSingleFireAnim");
     }
 
+    /// <summary>
+    /// automatic fire animation start
+    /// </summary>
+    /// <param name="_currentAmmo"> current gun's current ammo </param>
+    /// <param name="_reserveAmmo"> current gun's reserve ammo </param>
     public void PlayerStartAutomaticFireAnim(int _currentAmmo, int _reserveAmmo)
     {
         playerUI.ChangeGunUIText(_currentAmmo, _reserveAmmo);
@@ -222,19 +250,22 @@ public class PlayerActions : MonoBehaviour
         rot.enabled = true;
     }
 
+    /// <summary>
+    /// automatic fire animation continue
+    /// </summary>
+    /// <param name="_currentAmmo"> current gun's current ammo </param>
+    /// <param name="_reserveAmmo"> current gun's reserve ammo </param>
     public void PlayerContinueAutomaticFireAnim(int _currentAmmo, int _reserveAmmo)
     {
         playerUI.ChangeGunUIText(_currentAmmo, _reserveAmmo);
         currentGun.bullet.Play();
     }
 
-    public void PlayerStartReloadAnim(int _currentAmmo, int _reserveAmmo)
-    {
-        isAnimInProgress = true;
-        playerUI.ChangeGunUIText(_currentAmmo, _reserveAmmo);
-        InvokeRepeating("ReloadAnimCompress", 0f, currentGun.reloadTime / 6f);
-    }
-
+    /// <summary>
+    /// automatic fire animation stop
+    /// </summary>
+    /// <param name="_currentAmmo"> current gun's current ammo </param>
+    /// <param name="_reserveAmmo"> current gun's reserve ammo </param>
     public void PlayerStopAutomaticFireAnim()
     {
         isShooting = false;
@@ -242,6 +273,21 @@ public class PlayerActions : MonoBehaviour
         rot.enabled = false;
     }
 
+    /// <summary>
+    /// reload animation start
+    /// </summary>
+    /// <param name="_currentAmmo"> current gun's current ammo </param>
+    /// <param name="_reserveAmmo"> current gun's reserve ammo </param>
+    public void PlayerStartReloadAnim(int _currentAmmo, int _reserveAmmo)
+    {
+        isAnimInProgress = true;
+        playerUI.ChangeGunUIText(_currentAmmo, _reserveAmmo);
+        InvokeRepeating("ReloadAnimCompress", 0f, currentGun.reloadTime / 6f);
+    }
+
+    /// <summary>
+    /// reload animation part 2 (Compresses weapon)
+    /// </summary>
     public void ReloadAnimCompress()
     {
         if (shapeModule.radius > currentGun.originalGunRadius * 10)
@@ -255,6 +301,9 @@ public class PlayerActions : MonoBehaviour
         currentGun.gun.Play();
     }
 
+    /// <summary>
+    /// reload animation part 1 (expands weapon)
+    /// </summary>
     public void ReloadAnimExpand()
     {
         if (shapeModule.radius < currentGun.originalGunRadius)
@@ -269,6 +318,12 @@ public class PlayerActions : MonoBehaviour
         currentGun.gun.Play();
     }
 
+    /// <summary>
+    /// switch weapon animation start
+    /// </summary>
+    /// <param name="_newGunName"> new gun's name</param>
+    /// <param name="_currentAmmo"> new gun's current ammo </param>
+    /// <param name="_reserveAmmo"> new gun's reserve ammo </param>
     public void PlayerStartSwitchWeaponAnim(string _newGunName, int _currentAmmo, int _reserveAmmo)
     {
         isAnimInProgress = true;
@@ -339,6 +394,10 @@ public class PlayerActions : MonoBehaviour
         animationCounter++;
     }
 
+    /// <summary>
+    /// Plays shot landed animation
+    /// </summary>
+    /// <param name="_hitPoint"> position where shot landed </param>
     public void PlayerShotLanded(Vector3 _hitPoint)
     {
         if (particleIndex >= hitParticleGameObjects.Length)
@@ -349,6 +408,12 @@ public class PlayerActions : MonoBehaviour
         particleIndex++;
     }
 
+    /// <summary>
+    /// Inits player gun animation
+    /// </summary>
+    /// <param name="_gunName"> gun to init </param>
+    /// <param name="_currentAmmo"> gun's current ammo </param>
+    /// <param name="_reserveAmmo"> gun's reserve ammo </param>
     public void PlayerInitGun(string _gunName, int _currentAmmo, int _reserveAmmo)
     {
         foreach (GunInformation _gunInfo in allGunInformation.Values)
@@ -363,6 +428,11 @@ public class PlayerActions : MonoBehaviour
         playerUI.ChangeGunUIText(_currentAmmo, _reserveAmmo);
     }
 
+    /// <summary>
+    /// show other player's current weapon
+    /// </summary>
+    /// <param name="_id"> client's id to show current weapon </param>
+    /// <param name="_gunName"> client's current weapon </param>
     public void ShowOtherPlayerActiveWeapon(int _id, string _gunName)
     {
         if (GameManager.players.TryGetValue(_id, out PlayerManager _player))
@@ -386,6 +456,9 @@ public class PlayerActions : MonoBehaviour
 
     #region Grapple
 
+    /// <summary>
+    /// start grapple rope 
+    /// </summary>
     public void StartGrapple()
     {
         releasedGrappleControlSinceLastGrapple = false;
@@ -395,6 +468,9 @@ public class PlayerActions : MonoBehaviour
         lineRenderer.positionCount = 2;
     }
 
+    /// <summary>
+    /// Draws grapple rope
+    /// </summary>
     public void DrawRope()
     {
         ClientSend.PlayerContinueGrappling(transform.position, grapplePoint);
@@ -402,6 +478,12 @@ public class PlayerActions : MonoBehaviour
         lineRenderer.SetPosition(1, grapplePoint);
     }
 
+    /// <summary>
+    /// Draws other player's grapple rope
+    /// </summary>
+    /// <param name="_otherPlayerId"> other player to draw rope for </param>
+    /// <param name="_position"> other player's position </param>
+    /// <param name="_grapplePoint"> other player's grapple point </param>
     public void DrawOtherPlayerRope(int _otherPlayerId, Vector3 _position, Vector3 _grapplePoint)
     {
         GameManager.players[_otherPlayerId].lineRenderer.positionCount = 2;
@@ -409,11 +491,18 @@ public class PlayerActions : MonoBehaviour
         GameManager.players[_otherPlayerId].lineRenderer.SetPosition(1, _grapplePoint);
     }
 
+    /// <summary>
+    /// Updates grapple UI
+    /// </summary>
+    /// <param name="_currentGrappleTime"> current grapple time </param>
     public void ContinueGrapple(float _currentGrappleTime)
     {
         playerUI.SetGrapple(_currentGrappleTime);
     }
 
+    /// <summary>
+    /// Stops drawing rope
+    /// </summary>
     public void StopGrapple()
     {
         isGrappling = false;

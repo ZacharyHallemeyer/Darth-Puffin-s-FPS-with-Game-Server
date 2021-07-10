@@ -146,6 +146,9 @@ public class Server
         Debug.Log("Initialized packets.");
     }
 
+    /// <summary>
+    /// Closes server
+    /// </summary>
     public static void Stop()
     {
         tcpListener.Stop();

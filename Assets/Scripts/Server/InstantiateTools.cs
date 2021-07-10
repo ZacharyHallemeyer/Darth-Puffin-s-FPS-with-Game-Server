@@ -21,6 +21,10 @@ public class InstantiateTools : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Spawns player
+    /// </summary>
+    /// <returns></returns>
     public PlayerServerSide InstantiatePlayer()
     {
         return Instantiate(playerPrefab, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<PlayerServerSide>();

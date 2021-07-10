@@ -66,6 +66,9 @@ public class PlayerCamController : MonoBehaviour
             // TODO
     }
 
+    /// <summary>
+    /// Update camera and orientation rotations
+    /// </summary>
     private void Look()
     {
         mouseX = playerCam.ScreenToViewportPoint(inputMaster.Player.MouseLook.ReadValue<Vector2>()).x 
@@ -86,6 +89,9 @@ public class PlayerCamController : MonoBehaviour
         orientation.localRotation = Quaternion.Euler(0, desiredX, 0);
     }
 
+    /// <summary>
+    /// locks and unlocks cursor depending on its current lock state
+    /// </summary>
     private void ToggleCursorMode()
     {
         Cursor.visible = !Cursor.visible;

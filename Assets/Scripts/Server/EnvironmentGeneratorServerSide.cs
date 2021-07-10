@@ -46,19 +46,19 @@ public class EnvironmentGeneratorServerSide : MonoBehaviour
                                         Mathf.Abs(minPositionZ) + Mathf.Abs(maxPositionZ)
                                         }) + 100;
         Random.InitState(Random.Range(0, 10000));
-        //StartCoroutine(GeneratePlanets());
-        //StartCoroutine(GenerateEnvironment());
     }
 
     public IEnumerator GenerateEnvironment()
     {
         StartCoroutine(GeneratePlanets());
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForEndOfFrame();
     }
 
+    /// <summary>
+    /// Generate planets randomly once per frame until all planets are created
+    /// </summary>
     private IEnumerator GeneratePlanets()
     {
-        Debug.Log("Generate Planets called");
         int _errorCatcher, _maxErrorCatcher = 10000,_planetCount = Random.Range(minPlanetCount, maxPlanetCount);
         float _planetScale; 
         Vector3 _planetPosition;
@@ -89,10 +89,12 @@ public class EnvironmentGeneratorServerSide : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
-        Debug.Log("Planets: " + planets.Count);
-        //StartCoroutine(GenerateNonGravityObjects());
+        StartCoroutine(GenerateNonGravityObjects());
     }
 
+    /// <summary>
+    /// Generate non gravity objects randomly once per frame until all planets are created
+    /// </summary>
     private IEnumerator GenerateNonGravityObjects()
     {
         int _errorCatcher, _maxErrorCatcher = 10000, _index = 0;
@@ -129,23 +131,41 @@ public class EnvironmentGeneratorServerSide : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// returns true if collider is found in sphere with a position _position and scale _scale
+    /// </summary>
+    /// <param name="_scale"> scale of object </param>
+    /// <param name="_position"> position of object </param>
     private bool ColliderInPosition(float _scale, Vector3 _position)
     {
         float _planetDistance = Random.Range(minPlanetDistance, maxPlanetDistance);
         return Physics.CheckSphere(_position, _scale * _planetDistance);
     }
 
+    /// <summary>
+    /// returns true if collider is found in box with a position _position and scale _scale
+    /// </summary>
+    /// <param name="_scale"> scale of object </param>
+    /// <param name="_position"> position of object </param>
     private bool ColliderInPosition(Vector3 _scale, Vector3 _position)
     {
         float _objectDistance = Random.Range(minNonGravityObjectDistance, maxNonGravityObjectDistance);
         return Physics.CheckBox(_position, _scale * _objectDistance);
     }
 
+    /// <summary>
+    /// returns a vector with random value bounded by min and max position (public variables) 
+    /// </summary>
+    /// <returns> vector with random value bounded by min and max position (public variables) </returns>
     private Vector3 GenerateRandomVector()
     {
         return new Vector3(Random.Range(minPositionX, maxPositionX), Random.Range(minPositionY, maxPositionY), Random.Range(minPositionZ, maxPositionZ));
     }
 
+    /// <summary>
+    /// returns a random Quaternion 
+    /// </summary>
+    /// <returns> a random Quaternion </returns>
     private Quaternion GenerateRandomQuaternion()
     {
         return Quaternion.Euler(Random.Range(0, 360f), Random.Range(0, 360f), Random.Range(0, 360f));
