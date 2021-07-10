@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerServerSide : MonoBehaviour
+public class PlayerFFA : MonoBehaviour
 {
     #region Variables
     // Generic variables
@@ -511,7 +511,7 @@ public class PlayerServerSide : MonoBehaviour
             {
                 ServerSend.PlayerShotLanded(id, _hit.point);
                 if (_hit.collider.CompareTag("Player"))
-                    _hit.collider.GetComponent<PlayerServerSide>().TakeDamage(id, currentGun.damage);
+                    _hit.collider.GetComponent<PlayerFFA>().TakeDamage(id, currentGun.damage);
             }
         }
         else     // Shotgun
@@ -527,7 +527,7 @@ public class PlayerServerSide : MonoBehaviour
                 {
                     ServerSend.PlayerShotLanded(id, _hit.point);
                     if (_hit.collider.CompareTag("Player"))
-                        _hit.collider.GetComponent<PlayerServerSide>().TakeDamage(id, currentGun.damage);
+                        _hit.collider.GetComponent<PlayerFFA>().TakeDamage(id, currentGun.damage);
                 }
             }
         }
@@ -574,7 +574,7 @@ public class PlayerServerSide : MonoBehaviour
         {
             ServerSend.PlayerShotLanded(id, _hit.point);
             if (_hit.collider.CompareTag("Player"))
-                _hit.collider.GetComponent<PlayerServerSide>().TakeDamage(id, currentGun.damage);
+                _hit.collider.GetComponent<PlayerFFA>().TakeDamage(id, currentGun.damage);
         }
     }
 

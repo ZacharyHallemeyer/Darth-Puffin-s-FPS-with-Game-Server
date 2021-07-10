@@ -26,6 +26,7 @@ public class ClientSend : MonoBehaviour
     /// </summary>
     public static void WelcomeReceived()
     {
+        Debug.Log("Send welcome recieved called");
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.welcomeReceived))
         {
             _packet.Write(ClientClientSide.instance.myId);
@@ -33,6 +34,7 @@ public class ClientSend : MonoBehaviour
 
             SendTCPData(_packet);
         }
+        Debug.Log("Send welcome recieved completed");
     }
 
     /// <summary>

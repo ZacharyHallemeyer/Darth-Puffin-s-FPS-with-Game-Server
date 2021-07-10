@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 253784879808910213}
   - component: {fileID: 9141927637116987827}
   - component: {fileID: 3306257666982335818}
+  - component: {fileID: -8417651032451146546}
   m_Layer: 0
   m_Name: Pyramid
   m_TagString: Untagged
@@ -79,3 +80,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &-8417651032451146546
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3881814635048264086}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -462981019419857548, guid: 7c8aac7c8ebe65d4194b5d3e7a9633a5, type: 3}

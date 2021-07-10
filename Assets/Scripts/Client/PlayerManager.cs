@@ -10,8 +10,8 @@ public class PlayerManager : MonoBehaviour
     public float maxHealth;
     public MeshRenderer model;
     public InputMaster inputMaster;
-    public PlayerActions playerActions;
-    public PlayerMovement playerMovement;
+    public PlayerActionsFFA playerActions;
+    public PlayerMovementFFA playerMovement;
     public PlayerUI playerUI;
 
     // Materials
@@ -55,7 +55,7 @@ public class PlayerManager : MonoBehaviour
         username = _username;
         health = maxHealth;
         SetGunInformation();
-        if (name != "LocalPlayer(Clone)")
+        if (name != "LocalPlayerFFA(Clone)")
             enabled = false;
     }
 

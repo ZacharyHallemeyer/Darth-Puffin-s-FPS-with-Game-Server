@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ServerFreeForAll.unity
     guid: f12e094709fdd884f9f3ea33929f84f6
+  - enabled: 1
+    path: Assets/Scenes/ClientInfection.unity
+    guid: c13f91f0224f5534aba46cc713951426
+  - enabled: 1
+    path: Assets/Scenes/ServerInfection.unity
+    guid: 03a170b12b8625543849cb5f08c690c2
   m_configObjects: {}

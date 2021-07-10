@@ -105,7 +105,7 @@ public class ServerSend
     /// <summary>Tells a client to spawn a player.</summary>
     /// <param name="_toClient">The client that should spawn the player.</param>
     /// <param name="_player">The player to spawn.</param>
-    public static void SpawnPlayer(int _toClient, PlayerServerSide _player, string _gunName)
+    public static void SpawnPlayer(int _toClient, PlayerFFA _player, string _gunName)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.spawnPlayer))
         {
@@ -126,7 +126,7 @@ public class ServerSend
 
     /// <summary>Sends a player's updated position to all clients.</summary>
     /// <param name="_player">The player whose position to update.</param>
-    public static void PlayerPosition(PlayerServerSide _player)
+    public static void PlayerPosition(PlayerFFA _player)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerPosition))
         {
@@ -152,7 +152,7 @@ public class ServerSend
 
     /// <summary>Sends a player's updated rotation to all clients including himself </summary>
     /// <param name="_player">The player whose rotation to update.</param>
-    public static void PlayerRotation(PlayerServerSide _player, Quaternion orientation)
+    public static void PlayerRotation(PlayerFFA _player, Quaternion orientation)
     {
         // Send player rotation and orientation to all clients
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerRotation))
@@ -190,7 +190,7 @@ public class ServerSend
     /// Sends a players health to all clients and sends to all clients that another player has taken damage(used for taken damage animations)
     /// </summary>
     /// <param name="_player"> Player that health has changed </param>
-    public static void PlayerHealth(PlayerServerSide _player)
+    public static void PlayerHealth(PlayerFFA _player)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerHealth))
         {
@@ -222,7 +222,7 @@ public class ServerSend
     /// Tells all clients to respawn a player
     /// </summary>
     /// <param name="_player"> player to be respawned </param>
-    public static void PlayerRespawned(PlayerServerSide _player)
+    public static void PlayerRespawned(PlayerFFA _player)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerRespawned))
         {

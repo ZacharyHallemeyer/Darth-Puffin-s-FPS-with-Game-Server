@@ -12,6 +12,7 @@ public class ServerHandle
     /// <param name="_packet"> client id and client username </param>
     public static void WelcomeReceived(int _fromClient, PackerServerSide _packet)
     {
+        Debug.Log("Welcome Recieved");
         int _clientIdCheck = _packet.ReadInt();
         string _username = _packet.ReadString();
 
@@ -79,7 +80,7 @@ public class ServerHandle
     /// </summary>
     /// <param name="_fromClient"> Client that is connected to new input </param>
     /// <param name="_packet"> move direction and rotation </param>
-    public static void PlayerMovement(int _fromClient, PackerServerSide _packet)
+    public static void PlayerMovementFFA(int _fromClient, PackerServerSide _packet)
     {
         Vector2 _moveDirection = _packet.ReadVector2();
         Quaternion _rotation = _packet.ReadQuaternion();
@@ -128,6 +129,7 @@ public class ServerHandle
     /// <param name="_packet"> direction </param>
     public static void PlayerStartGrapple(int _fromClient, PackerServerSide _packet)
     {
+        //Server.InitializeServerData();
         Vector3 _direction = _packet.ReadVector3();
 
         Server.clients[_fromClient].player.StartGrapple(_direction);

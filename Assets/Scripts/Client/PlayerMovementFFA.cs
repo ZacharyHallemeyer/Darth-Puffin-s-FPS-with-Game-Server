@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovementFFA : MonoBehaviour
 {
     // General Variables
     public int id;
@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     public void Initialize(int _id, float _maxJetPackTime)
     {
         id = _id;
-        if (gameObject.name != "LocalPlayer(Clone)")
+        if (gameObject.name != "LocalPlayerFFA(Clone)")
         {
             enabled = false;
             return;

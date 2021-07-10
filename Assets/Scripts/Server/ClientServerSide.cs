@@ -11,7 +11,7 @@ public class ClientServerSide
 
     public int id;
     public string userName;
-    public PlayerServerSide player;
+    public PlayerFFA player;
     public TCP tcp;
     public UDP udp;
 
@@ -229,7 +229,7 @@ public class ClientServerSide
     public void SendIntoGameFreeForAll()
     {
         //player = InstantiateTools.instance.InstantiatePlayer();
-        player = NetworkManager.instance.InstantiatePlayer();
+        player = NetworkManager.instance.InstantiatePlayerFFA();
         player.Initialize(id, userName);
         Server.clients[id].player = player;
 

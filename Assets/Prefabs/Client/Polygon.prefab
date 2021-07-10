@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3157496508685824756}
   - component: {fileID: 6235982345834203330}
   - component: {fileID: 411553301830956091}
+  - component: {fileID: 2456715685369727367}
   m_Layer: 0
   m_Name: Polygon
   m_TagString: Untagged
@@ -79,3 +80,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &2456715685369727367
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128785905636851943}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5495902117074765545, guid: 1f734508291608f489fd6e671fab5071, type: 3}

@@ -25,9 +25,9 @@ public class InstantiateTools : MonoBehaviour
     /// Spawns player
     /// </summary>
     /// <returns></returns>
-    public PlayerServerSide InstantiatePlayer()
+    public PlayerFFA InstantiatePlayer()
     {
-        return Instantiate(playerPrefab, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<PlayerServerSide>();
+        return Instantiate(playerPrefab, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<PlayerFFA>();
         /*
         return Instantiate(playerPrefab, 
                            EnvironmentGenerator.spawnPoints[Random.Range(0, EnvironmentGenerator.spawnPoints.Count)]

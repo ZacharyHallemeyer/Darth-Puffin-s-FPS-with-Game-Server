@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerActions : MonoBehaviour
+public class PlayerActionsFFA : MonoBehaviour
 {
     // General Variables
     public int id;
@@ -69,7 +69,7 @@ public class PlayerActions : MonoBehaviour
     {
         id = _id;
         SetGunInformation();
-        if (gameObject.name != "LocalPlayer(Clone)")
+        if (gameObject.name != "LocalPlayerFFA(Clone)")
         {
             enabled = false;
             return;

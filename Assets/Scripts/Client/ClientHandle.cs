@@ -110,18 +110,6 @@ public class ClientHandle : MonoBehaviour
     }
 
     /// <summary>
-    /// Recieve which player took damage from server and start damage animation for that player
-    /// </summary>
-    /// <param name="_packet">fromId, toId</param>
-    public static void OtherPlayerTakenDamage(PacketClientSide _packet)
-    {
-        int _fromId = _packet.ReadInt();
-        int _toId = _packet.ReadInt();
-
-        GameManager.players[_toId].OtherPlayerTakenDamage(_fromId);
-    }
-
-    /// <summary>
     /// Recieve specific player health from health
     /// </summary>
     /// <param name="_packet"> id, health </param>
@@ -131,6 +119,18 @@ public class ClientHandle : MonoBehaviour
         int _health = _packet.ReadInt();
 
         GameManager.players[_id].SetHealth(_health);
+    }
+
+    /// <summary>
+    /// Recieve which player took damage from server and start damage animation for that player
+    /// </summary>
+    /// <param name="_packet">fromId, toId</param>
+    public static void OtherPlayerTakenDamage(PacketClientSide _packet)
+    {
+        int _fromId = _packet.ReadInt();
+        int _toId = _packet.ReadInt();
+
+        GameManager.players[_toId].OtherPlayerTakenDamage(_fromId);
     }
 
     /// <summary>
@@ -183,6 +183,8 @@ public class ClientHandle : MonoBehaviour
         GameManager.instance.CreateBoundaryVisual(_position, _radius);
     }
 
+    #region Player Actions
+
     /// <summary>
     /// Recieve player started grapple from server and play animation
     /// </summary>
@@ -218,7 +220,7 @@ public class ClientHandle : MonoBehaviour
         Vector3 _position = _packet.ReadVector3();
         Vector3 _grapplePoint = _packet.ReadVector3();
 
-        GameManager.playersActions[_toId].DrawOtherPlayerRope(_fromId, _position, _grapplePoint);
+        //GameManager.playersActions[_toId].DrawOtherPlayerRope(_fromId, _position, _grapplePoint);
     }
 
     /// <summary>
@@ -341,6 +343,8 @@ public class ClientHandle : MonoBehaviour
         GameManager.playersActions[_fromId].PlayerShotLanded(_hitPoint);
     }
 
+    #endregion
+
     /// <summary>
     /// Recieve player continue Jet Pack from server and play animation
     /// </summary>
@@ -353,6 +357,8 @@ public class ClientHandle : MonoBehaviour
         GameManager.playersMovement[_fromId].PlayerContinueJetPack(_jetPackTime);
     }
 
+
+    #region Player Stats
     /// <summary>
     /// Recieve player kills stats and update stats
     /// </summary>
@@ -376,4 +382,5 @@ public class ClientHandle : MonoBehaviour
 
         GameManager.players[_id].currentDeaths = _currentDeaths;
     }
+    #endregion
 }

@@ -7,8 +7,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
-    public static Dictionary<int, PlayerActions> playersActions = new Dictionary<int, PlayerActions>();
-    public static Dictionary<int, PlayerMovement> playersMovement = new Dictionary<int, PlayerMovement>();
+    public static Dictionary<int, PlayerActionsFFA> playersActions = new Dictionary<int, PlayerActionsFFA>();
+    public static Dictionary<int, PlayerMovementFFA> playersMovement = new Dictionary<int, PlayerMovementFFA>();
 
     public GameObject localPlayerPrefab;
     public GameObject playerPrefab;
@@ -61,10 +61,10 @@ public class GameManager : MonoBehaviour
         {
             // Local Player
             _player = Instantiate(localPlayerPrefab, _position, _rotation);
-            _player.GetComponent<PlayerActions>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo, _maxGrappleTime);
-            playersActions.Add(_id, _player.GetComponent<PlayerActions>());
-            _player.GetComponent<PlayerMovement>().Initialize(_id, _maxJetPackTime);
-            playersMovement.Add(_id, _player.GetComponent<PlayerMovement>());
+            _player.GetComponent<PlayerActionsFFA>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo, _maxGrappleTime);
+            playersActions.Add(_id, _player.GetComponent<PlayerActionsFFA>());
+            _player.GetComponent<PlayerMovementFFA>().Initialize(_id, _maxJetPackTime);
+            playersMovement.Add(_id, _player.GetComponent<PlayerMovementFFA>());
             _player.GetComponent<PlayerManager>().Initialize(_id, _username);
             players.Add(_id, _player.GetComponent<PlayerManager>());
         }

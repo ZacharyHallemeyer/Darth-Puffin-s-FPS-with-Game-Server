@@ -118,7 +118,7 @@ public class Server
     }
 
     /// <summary>Initializes all necessary server data.</summary>
-    private static void InitializeServerData()
+    public static void InitializeServerData()
     {
         for (int i = 1; i <= MaxPlayers; i++)
         {
@@ -130,7 +130,55 @@ public class Server
             { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
             { (int)ClientPackets.startGame, ServerHandle.SendLobbyIntoGame },
             { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironment },
-            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
+            /*
+            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovementFFA },
+            { (int)ClientPackets.playerJetPackMovement, ServerHandle.PlayerJetPackMovement },
+            { (int)ClientPackets.playerActions, ServerHandle.PlayerActions },
+            { (int)ClientPackets.playerStartGrapple, ServerHandle.PlayerStartGrapple },
+            { (int)ClientPackets.playerContinueGrappling, ServerHandle.PlayerContinueGrappling },
+            { (int)ClientPackets.playerStopGrapple, ServerHandle.PlayerStopGrapple },
+            { (int)ClientPackets.playerStartShoot, ServerHandle.PlayerStartShoot },
+            { (int)ClientPackets.playerUpdateShootDirection, ServerHandle.PlayerUpdateShootDirection },
+            { (int)ClientPackets.playerStopShoot, ServerHandle.PlayerStopShoot },
+            { (int)ClientPackets.playerReload, ServerHandle.PlayerReload },
+            { (int)ClientPackets.playerSwitchWeapon, ServerHandle.PlayerSwitchWeapon },
+            { (int)ClientPackets.playerMagnetize, ServerHandle.PlayerMagnetize },
+            */
+        };
+        Debug.Log("Initialized packets.");
+    }
+
+    public static void ChangeServerDataToFreeForAll ()
+    {
+        packetHandlers = new Dictionary<int, PacketHandler>()
+        {
+            { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+            { (int)ClientPackets.startGame, ServerHandle.SendLobbyIntoGame },
+            { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironment },
+            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovementFFA },
+            { (int)ClientPackets.playerJetPackMovement, ServerHandle.PlayerJetPackMovement },
+            { (int)ClientPackets.playerActions, ServerHandle.PlayerActions },
+            { (int)ClientPackets.playerStartGrapple, ServerHandle.PlayerStartGrapple },
+            { (int)ClientPackets.playerContinueGrappling, ServerHandle.PlayerContinueGrappling },
+            { (int)ClientPackets.playerStopGrapple, ServerHandle.PlayerStopGrapple },
+            { (int)ClientPackets.playerStartShoot, ServerHandle.PlayerStartShoot },
+            { (int)ClientPackets.playerUpdateShootDirection, ServerHandle.PlayerUpdateShootDirection },
+            { (int)ClientPackets.playerStopShoot, ServerHandle.PlayerStopShoot },
+            { (int)ClientPackets.playerReload, ServerHandle.PlayerReload },
+            { (int)ClientPackets.playerSwitchWeapon, ServerHandle.PlayerSwitchWeapon },
+            { (int)ClientPackets.playerMagnetize, ServerHandle.PlayerMagnetize },
+        };
+        Debug.Log("Initialized packets.");
+    }
+
+    public static void ChangeServerDataToInfection()
+    {
+        packetHandlers = new Dictionary<int, PacketHandler>()
+        {
+            { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+            { (int)ClientPackets.startGame, ServerHandle.SendLobbyIntoGame },
+            { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironment },
+            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovementFFA },
             { (int)ClientPackets.playerJetPackMovement, ServerHandle.PlayerJetPackMovement },
             { (int)ClientPackets.playerActions, ServerHandle.PlayerActions },
             { (int)ClientPackets.playerStartGrapple, ServerHandle.PlayerStartGrapple },
