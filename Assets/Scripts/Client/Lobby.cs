@@ -68,6 +68,30 @@ public class Lobby : MonoBehaviour
     /// </summary>
     public void ExitGame()
     {
+        if(InfectionEnvironmentGenerator.instance != null)
+        {
+            InfectionEnvironmentGenerator.buildings = new Dictionary<int, GameObject>();
+            InfectionEnvironmentGenerator.lights = new Dictionary<int, GameObject>();
+            InfectionEnvironmentGenerator.suns = new Dictionary<int, GameObject>();
+        }
+        if(EnvironmentGeneratorServerSide.instance != null)
+        {
+            EnvironmentGeneratorServerSide.planets = new Dictionary<int, GameObject>();
+            EnvironmentGeneratorServerSide.nonGravityObjectDict = new Dictionary<int, GameObject>();
+        }
+
+        ClientClientSide.allClients = new Dictionary<int, string>();
+        ClientServerSide.allClients = new Dictionary<int, ClientServerSide>();
+        // If player is host than close server and network manager
+        if(Server.isHost)
+        {
+            Server.clients = new Dictionary<int, ClientServerSide>();
+            Server.Stop();
+            Destroy(FindObjectOfType<NetworkManager>().gameObject);
+        }
+
+        Destroy(FindObjectOfType<ClientClientSide>().gameObject);
+        Destroy(FindObjectOfType<EventSystem>().gameObject);
         for(int i = 0; i < SceneManager.sceneCount; i++)
         {
             SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
