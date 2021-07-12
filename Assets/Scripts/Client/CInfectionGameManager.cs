@@ -78,6 +78,7 @@ public class CInfectionGameManager : MonoBehaviour
         PlayerUI _playerUI = FindObjectOfType<PlayerUI>();
         if (_playerUI != null)
             _playerUI.InitScoreBoard();
+        Debug.Log("Player added");
     }
 
     public void SpawnBuilding(Vector3 _position, Vector3 _localScale, int _key)

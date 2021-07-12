@@ -11,6 +11,7 @@ public class SPlayerInfection : MonoBehaviour
     public Rigidbody rb;
     public Transform orientation;
     public SPlayer player;
+    public float health, maxHealth = 100;
 
     // Input
     private Vector2 moveDirection;
@@ -49,7 +50,7 @@ public class SPlayerInfection : MonoBehaviour
     //Wallrunning
     public LayerMask whatIsWall;
     public Transform wallCheck;
-    private readonly float wallDistance = 3f;
+    public float wallDistance = 3f;
     public float wallrunForce;
     public float maxWallRunCameraTilt, wallRunCameraTilt;
     private float currentHandPosition = .15f;
@@ -104,6 +105,7 @@ public class SPlayerInfection : MonoBehaviour
         id = _id;
         username = _username;
         player = _player;
+        health = maxHealth;
         playerScale = transform.localScale;
 
         SetGunInformation();
@@ -200,6 +202,7 @@ public class SPlayerInfection : MonoBehaviour
     /// <param name="_inputDirection"></param>
     private void Movement()
     {
+        SendPlayerData();
         rb.AddForce(Vector3.down * Time.deltaTime * 10);
 
         if (isJumping) return;
@@ -282,8 +285,6 @@ public class SPlayerInfection : MonoBehaviour
             rb.AddForce(orientation.transform.forward * moveDirection.y * moveSpeed * Time.deltaTime * multiplier * multiplierV);
             rb.AddForce(orientation.transform.right * moveDirection.x * moveSpeed * Time.deltaTime * multiplier);
         }
-
-        SendPlayerData();
     }
 
     public void Jump()
@@ -332,7 +333,6 @@ public class SPlayerInfection : MonoBehaviour
         // Prevents guns and other such objects from shrinking
         foreach (Transform child in gameObject.transform)
             child.localScale = playerScale;
-        SendPlayerData();
     }
 
     /// <summary>
@@ -348,7 +348,6 @@ public class SPlayerInfection : MonoBehaviour
         // Prevents guns and other such objects from expanding larger than intended
         foreach (Transform child in gameObject.transform)
             child.localScale = crouchScale;
-        SendPlayerData();
     }
 
     /// <summary>
@@ -497,7 +496,13 @@ public class SPlayerInfection : MonoBehaviour
         isWallForward = Physics.Raycast(transform.position, orientation.forward, wallDistance, whatIsWall);
         isWallBackward = Physics.Raycast(transform.position, -orientation.forward, wallDistance, whatIsWall);
         isOnWall = Physics.CheckSphere(wallCheck.position + Vector3.up, wallDistance, whatIsWall);
-        if (isOnWall) Wallrun();
+        if (isOnWall)
+        {
+            timeOnWall += Time.deltaTime;
+            Wallrun();
+        }
+        else
+            timeOnWall = 0;
 
         //leave wall run
         if (!isOnWall) StopWallRun();
@@ -608,7 +613,7 @@ public class SPlayerInfection : MonoBehaviour
     {
         isAnimInProgress = true;
         currentGun.currentAmmo--;
-        ServerSend.PlayerSingleFire(id, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerSingleFireInfection(id, currentGun.currentAmmo, currentGun.reserveAmmo);
         // Reduce accuracy by a certain value 
         Vector3 reduceAccuracy = fireDirection + new Vector3(Random.Range(-currentGun.accuaracyOffset, currentGun.accuaracyOffset),
                                                                 Random.Range(-currentGun.accuaracyOffset, currentGun.accuaracyOffset));
@@ -625,9 +630,9 @@ public class SPlayerInfection : MonoBehaviour
             Ray ray = new Ray(firePoint, reduceAccuracy);
             if (Physics.Raycast(ray, out RaycastHit _hit, currentGun.range, whatIsShootable))
             {
-                ServerSend.PlayerShotLanded(id, _hit.point);
+                ServerSend.PlayerShotLandedInfection(id, _hit.point);
                 if (_hit.collider.CompareTag("Player"))
-                    _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
+                    _hit.collider.GetComponent<SPlayerInfection>().TakeDamage(id, currentGun.damage);
             }
         }
         else     // Shotgun
@@ -641,9 +646,9 @@ public class SPlayerInfection : MonoBehaviour
                 Ray ray = new Ray(firePoint, trajectory);
                 if (Physics.Raycast(ray, out RaycastHit _hit, currentGun.range, whatIsShootable))
                 {
-                    ServerSend.PlayerShotLanded(id, _hit.point);
+                    ServerSend.PlayerShotLandedInfection(id, _hit.point);
                     if (_hit.collider.CompareTag("Player"))
-                        _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
+                        _hit.collider.GetComponent<SPlayerInfection>().TakeDamage(id, currentGun.damage);
                 }
             }
         }
@@ -679,7 +684,7 @@ public class SPlayerInfection : MonoBehaviour
                 currentGun.reserveAmmo = 0;
             }
         }
-        ServerSend.PlayerReload(id, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerReloadInfection(id, currentGun.currentAmmo, currentGun.reserveAmmo);
     }
 
     /// <summary>
@@ -693,7 +698,7 @@ public class SPlayerInfection : MonoBehaviour
         currentGun = secondaryGun;
         secondaryGun = temp;
 
-        ServerSend.PlayerSwitchWeapon(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerSwitchWeaponInfection(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
         // Send to all clients this player has switched it weapon
         foreach (ClientServerSide _client in Server.clients.Values)
         {
@@ -701,10 +706,55 @@ public class SPlayerInfection : MonoBehaviour
             {
                 if (_client.id != id)
                 {
-                    ServerSend.OtherPlayerSwitchedWeapon(id, _client.id, currentGun.name);
+                    ServerSend.OtherPlayerSwitchedWeaponInfection(id, _client.id, currentGun.name);
                 }
             }
         }
+    }
+
+    #endregion
+
+    #region Stats
+
+    /// <summary>
+    /// Take damage and update health and update stats
+    /// </summary>
+    /// <param name="_fromId"> Client that called this function </param>
+    /// <param name="_damage"> Value to subtract from health </param>
+    public void TakeDamage(int _fromId, float _damage)
+    {
+        if (player.health <= 0)
+            return;
+
+        player.health -= _damage;
+
+        if (player.health <= 0)
+        {
+            player.health = 0;
+            player.currentDeaths++;
+            ServerSend.UpdatePlayerDeathStats(id, player.currentDeaths);
+            Server.clients[_fromId].player.currentKills++;
+            ServerSend.UpdatePlayerKillStats(_fromId, Server.clients[_fromId].player.currentKills);
+            // Teleport to random spawnpoint
+            player.transform.position = InfectionEnvironmentGenerator.spawnPoints[
+                                 Random.Range(0, InfectionEnvironmentGenerator.spawnPoints.Count)];
+            ServerSend.PlayerPositionInfection(player);
+            StartCoroutine(Respawn());
+        }
+
+        ServerSend.PlayerHealthInfection(player);
+    }
+
+
+    /// <summary>
+    /// Respawns player after 5 seconds
+    /// </summary>
+    private IEnumerator Respawn()
+    {
+        yield return new WaitForSeconds(5f);
+
+        health = maxHealth;
+        ServerSend.PlayerRespawnedInfection(player);
     }
 
     #endregion

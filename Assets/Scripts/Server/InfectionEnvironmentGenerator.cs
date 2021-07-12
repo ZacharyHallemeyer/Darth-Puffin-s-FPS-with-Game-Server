@@ -6,6 +6,7 @@ public class InfectionEnvironmentGenerator : MonoBehaviour
 {
     public static InfectionEnvironmentGenerator instance;
     public static Dictionary<int, GameObject> buildings = new Dictionary<int, GameObject>();
+    public static List<Vector3> spawnPoints = new List<Vector3>();
     private int index = 0;
     public static Dictionary<int, GameObject> lights = new Dictionary<int, GameObject>();
     public static Dictionary<int, GameObject> suns = new Dictionary<int, GameObject>();
@@ -190,6 +191,10 @@ public class InfectionEnvironmentGenerator : MonoBehaviour
         currentBuilding.transform.parent = environmentContainer.transform;
         currentBuilding.isStatic = true;
         buildings.Add(index, currentBuilding);
+        // Spawn points are a little bit above each building
+        Vector3 _spawnPoint = currentBuilding.transform.position
+                              + new Vector3(0, currentBuilding.transform.localScale.y / 2 + 2, 0);
+        spawnPoints.Add(_spawnPoint);
         index++;
 
         // Fill power up spawn locations (5 units above the first 10 buildings spawned)

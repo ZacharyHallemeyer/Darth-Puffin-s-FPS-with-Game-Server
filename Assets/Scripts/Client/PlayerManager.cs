@@ -133,14 +133,14 @@ public class PlayerManager : MonoBehaviour
     /// <param name="_otherPlayerId"> player that took damage id </param>
     public void OtherPlayerTakenDamage(int _otherPlayerId)
     {
-        GameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = damagedPlayerMaterial;
+        CFFAGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = damagedPlayerMaterial;
         StartCoroutine(OtherPlayerTakeDamageHelper(_otherPlayerId));
     }
 
     public IEnumerator OtherPlayerTakeDamageHelper(int _otherPlayerId)
     {
         yield return new WaitForSeconds(.5f); 
-        GameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = basePlayerMaterial;
+        CFFAGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = basePlayerMaterial;
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public class PlayerManager : MonoBehaviour
     /// <param name="_otherPlayerId"> player to destroy rope </param>
     public void ClearOtherPlayerRope(int _otherPlayerId)
     {
-        GameManager.players[_otherPlayerId].lineRenderer.positionCount = 0;
+        CFFAGameManager.players[_otherPlayerId].lineRenderer.positionCount = 0;
     }
 
     /// <summary>

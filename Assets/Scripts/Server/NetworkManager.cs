@@ -70,6 +70,8 @@ public class NetworkManager : MonoBehaviour
 
     public SPlayer InstantiatePlayerInfection()
     {
-        return Instantiate(playerPrefabInfection, new Vector3(0f, 2f, 0f), Quaternion.identity).GetComponent<SPlayer>();
+        return Instantiate(playerPrefabInfection,InfectionEnvironmentGenerator.spawnPoints[
+                           Random.Range(0, InfectionEnvironmentGenerator.spawnPoints.Count)], 
+                           Quaternion.identity).GetComponent<SPlayer>();
     }
 }

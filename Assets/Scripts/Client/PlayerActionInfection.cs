@@ -12,6 +12,16 @@ public class PlayerActionInfection : MonoBehaviour
     public Vector3 playerScale;
     public Vector3 CrouchScale = Vector3.one;
 
+
+    // Materials
+    public Material basePlayerMaterial;
+    public Material damagedPlayerMaterial;
+    public Material deadPlayerMaterial;
+
+    public Shader basePlayerShader;
+    public Shader damagedPlayerShader;
+    public Shader deadPlayerShader;
+
     // Movement
     public Transform orientation;
     public LayerMask whatIsGravityObject;
@@ -366,9 +376,9 @@ public class PlayerActionInfection : MonoBehaviour
     /// <param name="_gunName"> client's current weapon </param>
     public void ShowOtherPlayerActiveWeapon(int _id, string _gunName)
     {
-        if (GameManager.players.TryGetValue(_id, out PlayerManager _player))
+        if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
         {
-            _player = GameManager.players[_id];
+            _player = CInfectionGameManager.players[_id];
         }
         else return;
 
@@ -384,4 +394,20 @@ public class PlayerActionInfection : MonoBehaviour
     }
 
     #endregion
+
+    /// <summary>
+    /// Show other player take damage animation
+    /// </summary>
+    /// <param name="_otherPlayerId"> player that took damage id </param>
+    public void OtherPlayerTakenDamage(int _otherPlayerId)
+    {
+        CInfectionGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = damagedPlayerMaterial;
+        StartCoroutine(OtherPlayerTakeDamageHelper(_otherPlayerId));
+    }
+
+    public IEnumerator OtherPlayerTakeDamageHelper(int _otherPlayerId)
+    {
+        yield return new WaitForSeconds(.5f);
+        CInfectionGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = basePlayerMaterial;
+    }
 }

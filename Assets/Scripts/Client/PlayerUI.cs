@@ -104,13 +104,27 @@ public class PlayerUI : MonoBehaviour
     public void DisplayScoreBoard()
     {
         scoreBoardParent.SetActive(true);
-        for (int i = 0; i < GameManager.players.Count; i++)
+        if(CFFAGameManager.players.Count > 0)
         {
-            scoreBoardRows[i].userNameText.text = GameManager.players[i + 1].username;
-            scoreBoardRows[i].currentKillsText.text = GameManager.players[i + 1].currentKills.ToString();
-            scoreBoardRows[i].currentDeathsText.text = GameManager.players[i + 1].currentDeaths.ToString();
-            scoreBoardRows[i].currentKillsInt = GameManager.players[i + 1].currentKills;
-            scoreBoardRows[i].currentDeathsInt = GameManager.players[i + 1].currentDeaths;
+            for (int i = 0; i < CFFAGameManager.players.Count; i++)
+            {
+                scoreBoardRows[i].userNameText.text = CFFAGameManager.players[i + 1].username;
+                scoreBoardRows[i].currentKillsText.text = CFFAGameManager.players[i + 1].currentKills.ToString();
+                scoreBoardRows[i].currentDeathsText.text = CFFAGameManager.players[i + 1].currentDeaths.ToString();
+                scoreBoardRows[i].currentKillsInt = CFFAGameManager.players[i + 1].currentKills;
+                scoreBoardRows[i].currentDeathsInt = CFFAGameManager.players[i + 1].currentDeaths;
+            }
+        }
+        else if(CInfectionGameManager.players.Count > 0)
+        {
+            for (int i = 0; i < CInfectionGameManager.players.Count; i++)
+            {
+                scoreBoardRows[i].userNameText.text = CInfectionGameManager.players[i + 1].username;
+                scoreBoardRows[i].currentKillsText.text = CInfectionGameManager.players[i + 1].currentKills.ToString();
+                scoreBoardRows[i].currentDeathsText.text = CInfectionGameManager.players[i + 1].currentDeaths.ToString();
+                scoreBoardRows[i].currentKillsInt = CInfectionGameManager.players[i + 1].currentKills;
+                scoreBoardRows[i].currentDeathsInt = CInfectionGameManager.players[i + 1].currentDeaths;
+            }
         }
 
         // Sort Score board by kills (bubble sort)
@@ -153,20 +167,42 @@ public class PlayerUI : MonoBehaviour
                 Destroy(_scoreBoardRow.scoreBoardRow);
             }
         }
-        scoreBoardRows = new ScoreBoardRow[GameManager.players.Count];
-        foreach(PlayerManager _player in GameManager.players.Values)
+        if(CFFAGameManager.players.Count > 0)
         {
-            if(_player != null)
+            scoreBoardRows = new ScoreBoardRow[CFFAGameManager.players.Count];
+            foreach(PlayerManager _player in CFFAGameManager.players.Values)
             {
-                GameObject _scoreBoardRow = Instantiate(scoreBoardRowPrefab, scoreBoardParent.transform);
-                _scoreBoardRow.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, _yPos, 0);
+                if(_player != null)
+                {
+                    GameObject _scoreBoardRow = Instantiate(scoreBoardRowPrefab, scoreBoardParent.transform);
+                    _scoreBoardRow.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, _yPos, 0);
 
-                _yPos -= .1f;
-                scoreBoardRows[_player.id - 1] = new ScoreBoardRow();
-                scoreBoardRows[_player.id - 1].scoreBoardRow = _scoreBoardRow;
-                scoreBoardRows[_player.id - 1].userNameText = _scoreBoardRow.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-                scoreBoardRows[_player.id - 1].currentKillsText = _scoreBoardRow.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                scoreBoardRows[_player.id - 1].currentDeathsText = _scoreBoardRow.transform.GetChild(3).GetComponent<TextMeshProUGUI>();
+                    _yPos -= .1f;
+                    scoreBoardRows[_player.id - 1] = new ScoreBoardRow();
+                    scoreBoardRows[_player.id - 1].scoreBoardRow = _scoreBoardRow;
+                    scoreBoardRows[_player.id - 1].userNameText = _scoreBoardRow.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                    scoreBoardRows[_player.id - 1].currentKillsText = _scoreBoardRow.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    scoreBoardRows[_player.id - 1].currentDeathsText = _scoreBoardRow.transform.GetChild(3).GetComponent<TextMeshProUGUI>();
+                }
+            }
+        }
+        else if(CInfectionGameManager.players.Count > 0)
+        {
+            scoreBoardRows = new ScoreBoardRow[CInfectionGameManager.players.Count];
+            foreach (PlayerManager _player in CInfectionGameManager.players.Values)
+            {
+                if (_player != null)
+                {
+                    GameObject _scoreBoardRow = Instantiate(scoreBoardRowPrefab, scoreBoardParent.transform);
+                    _scoreBoardRow.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, _yPos, 0);
+
+                    _yPos -= .1f;
+                    scoreBoardRows[_player.id - 1] = new ScoreBoardRow();
+                    scoreBoardRows[_player.id - 1].scoreBoardRow = _scoreBoardRow;
+                    scoreBoardRows[_player.id - 1].userNameText = _scoreBoardRow.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                    scoreBoardRows[_player.id - 1].currentKillsText = _scoreBoardRow.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    scoreBoardRows[_player.id - 1].currentDeathsText = _scoreBoardRow.transform.GetChild(3).GetComponent<TextMeshProUGUI>();
+                }
             }
         }
         scoreBoardParent.SetActive(false);

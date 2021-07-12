@@ -1330,6 +1330,16 @@ MonoBehaviour:
   playerUI: {fileID: 2029716086609535213}
   playerScale: {x: 0, y: 0, z: 0}
   CrouchScale: {x: 1, y: 1, z: 1}
+  basePlayerMaterial: {fileID: 2100000, guid: 2871d9f3e93c54c4fac02f47e0296ab3, type: 2}
+  damagedPlayerMaterial: {fileID: 2100000, guid: 4b428e8457040fe49934e700f022bbad,
+    type: 2}
+  deadPlayerMaterial: {fileID: 2100000, guid: 558591ebbe63fc94aa45e7404ebd35ac, type: 2}
+  basePlayerShader: {fileID: -6465566751694194690, guid: bbb452cb658707140a17d4162bcd72ae,
+    type: 3}
+  damagedPlayerShader: {fileID: -6465566751694194690, guid: fd8ca4da5f7df55468017af32c1cfa6b,
+    type: 3}
+  deadPlayerShader: {fileID: -6465566751694194690, guid: d19469e9c8072d848b76c6dbce1de4f7,
+    type: 3}
   orientation: {fileID: 8054929854358216728}
   whatIsGravityObject:
     serializedVersion: 2
@@ -2762,6 +2772,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56c5cbbecaa48ed43abcafd664a4a830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wallRunCameraTilt: 0
+  maxWallRunCameraTilt: 10
   playerRotation: {fileID: 3779463834754585852}
   orientation: {fileID: 8054929854358216728}
   playerCam: {fileID: 3177949867122811935}

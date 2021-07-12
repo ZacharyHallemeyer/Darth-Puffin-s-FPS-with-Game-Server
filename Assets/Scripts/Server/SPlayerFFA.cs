@@ -206,6 +206,7 @@ public class SPlayerFFA : MonoBehaviour
 
     private void FixedUpdate()
     {
+        SendPlayerData();
         GravityController();
 
         if (isGrounded)
@@ -229,7 +230,7 @@ public class SPlayerFFA : MonoBehaviour
         if (currentJetPackPower < maxJetPackPower)
         {
             currentJetPackPower += jetPackRecoveryIncrementor;
-            ServerSend.PlayerContinueJetPack(id, currentJetPackPower);
+            ServerSend.PlayerContinueJetPackFFA(id, currentJetPackPower);
         }
     }
 
@@ -278,8 +279,6 @@ public class SPlayerFFA : MonoBehaviour
         // Stick to ground object
         Collider[] _groundCollider = Physics.OverlapSphere(transform.position, groundDistance * 2, whatIsGround);
         rb.AddForce((_groundCollider[0].transform.position - transform.position) * gravityForce * 3 * Time.deltaTime);
-
-        SendPlayerData();
     }
 
     #endregion
@@ -296,7 +295,6 @@ public class SPlayerFFA : MonoBehaviour
         currentJetPackPower -= jetPackBurstCost;
 
         rb.AddForce(_direction * jetPackForce * 50 * Time.deltaTime, ForceMode.Impulse);
-        SendPlayerData();
     }
 
     /// <summary>
@@ -310,7 +308,6 @@ public class SPlayerFFA : MonoBehaviour
         //ServerSend.PlayerContinueJetPack(id, currentJetPackTime);
         else
             rb.AddForce(_direction * jetPackForce * Time.deltaTime, ForceMode.Impulse);
-        SendPlayerData();
     }
     #endregion
 
@@ -325,7 +322,6 @@ public class SPlayerFFA : MonoBehaviour
         if (transform.position.magnitude > maxDistanceFromOrigin)
         {
             rb.AddForce(-transform.position.normalized * forceBackToOrigin * Time.deltaTime);
-            SendPlayerData();
             return;
         }
 
@@ -340,7 +336,6 @@ public class SPlayerFFA : MonoBehaviour
                 ApplyGravity(_gravityObjects[i]);   // Apply gravity for each gravity object in range
             }
         }
-        SendPlayerData();
     }
 
     /// <summary>
@@ -478,7 +473,7 @@ public class SPlayerFFA : MonoBehaviour
     {
         isAnimInProgress = true;
         currentGun.currentAmmo--;
-        ServerSend.PlayerSingleFire(id, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerSingleFireFFA(id, currentGun.currentAmmo, currentGun.reserveAmmo);
         // Reduce accuracy by a certain value 
         Vector3 reduceAccuracy = fireDirection + new Vector3(Random.Range(-currentGun.accuaracyOffset, currentGun.accuaracyOffset),
                                                                 Random.Range(-currentGun.accuaracyOffset, currentGun.accuaracyOffset));
@@ -495,9 +490,9 @@ public class SPlayerFFA : MonoBehaviour
             Ray ray = new Ray(firePoint, reduceAccuracy);
             if (Physics.Raycast(ray, out RaycastHit _hit, currentGun.range, whatIsShootable))
             {
-                ServerSend.PlayerShotLanded(id, _hit.point);
+                ServerSend.PlayerShotLandedFFA(id, _hit.point);
                 if (_hit.collider.CompareTag("Player"))
-                    _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
+                    _hit.collider.GetComponent<SPlayerFFA>().TakeDamage(id, currentGun.damage);
             }
         }
         else     // Shotgun
@@ -511,9 +506,9 @@ public class SPlayerFFA : MonoBehaviour
                 Ray ray = new Ray(firePoint, trajectory);
                 if (Physics.Raycast(ray, out RaycastHit _hit, currentGun.range, whatIsShootable))
                 {
-                    ServerSend.PlayerShotLanded(id, _hit.point);
+                    ServerSend.PlayerShotLandedFFA(id, _hit.point);
                     if (_hit.collider.CompareTag("Player"))
-                        _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
+                        _hit.collider.GetComponent<SPlayerFFA>().TakeDamage(id, currentGun.damage);
                 }
             }
         }
@@ -531,7 +526,7 @@ public class SPlayerFFA : MonoBehaviour
     public void StartAutomaticFire()
     {
         isShooting = true;
-        ServerSend.PlayerStartAutomaticFire(id, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerStartAutomaticFireFFA(id, currentGun.currentAmmo, currentGun.reserveAmmo);
         InvokeRepeating("AutomaticShoot", 0f, currentGun.fireRate);
     }
 
@@ -542,7 +537,7 @@ public class SPlayerFFA : MonoBehaviour
     {
         // Reduce accuracy by a certain value 
         currentGun.currentAmmo--;
-        ServerSend.PlayerContinueAutomaticFire(id, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerContinueAutomaticFireFFA(id, currentGun.currentAmmo, currentGun.reserveAmmo);
         Vector3 reduceAccuracy = fireDirection + new Vector3(Random.Range(-currentGun.accuaracyOffset, currentGun.accuaracyOffset),
                                                                 Random.Range(-currentGun.accuaracyOffset, currentGun.accuaracyOffset));
 
@@ -558,9 +553,9 @@ public class SPlayerFFA : MonoBehaviour
         Ray ray = new Ray(firePoint, reduceAccuracy);
         if (Physics.Raycast(ray, out RaycastHit _hit, currentGun.range, whatIsShootable))
         {
-            ServerSend.PlayerShotLanded(id, _hit.point);
+            ServerSend.PlayerShotLandedFFA(id, _hit.point);
             if (_hit.collider.CompareTag("Player"))
-                _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
+                _hit.collider.GetComponent<SPlayerFFA>().TakeDamage(id, currentGun.damage);
         }
     }
 
@@ -569,7 +564,7 @@ public class SPlayerFFA : MonoBehaviour
     /// </summary>
     public void StopAutomaticShoot()
     {
-        ServerSend.PlayerStopAutomaticFire(id);
+        ServerSend.PlayerStopAutomaticFireFFA(id);
         CancelInvoke("AutomaticShoot");
         isShooting = false;
     }
@@ -601,7 +596,7 @@ public class SPlayerFFA : MonoBehaviour
                 currentGun.reserveAmmo = 0;
             }
         }
-        ServerSend.PlayerReload(id, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerReloadFFA(id, currentGun.currentAmmo, currentGun.reserveAmmo);
     }
 
     /// <summary>
@@ -616,7 +611,7 @@ public class SPlayerFFA : MonoBehaviour
         currentGun = secondaryGun;
         secondaryGun = temp;
 
-        ServerSend.PlayerSwitchWeapon(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
+        ServerSend.PlayerSwitchWeaponFFA(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
         // Send to all clients this player has switched it weapon
         foreach (ClientServerSide _client in Server.clients.Values)
         {
@@ -624,7 +619,7 @@ public class SPlayerFFA : MonoBehaviour
             {
                 if (_client.id != id)
                 {
-                    ServerSend.OtherPlayerSwitchedWeapon(id, _client.id, currentGun.name);
+                    ServerSend.OtherPlayerSwitchedWeaponFFA(id, _client.id, currentGun.name);
                 }
             }
         }
@@ -670,7 +665,7 @@ public class SPlayerFFA : MonoBehaviour
             joint.damper = 0f;
             joint.massScale = 0f;
 
-            ServerSend.PlayerStartGrapple(id);
+            ServerSend.PlayerStartGrappleFFA(id);
         }
     }
 
@@ -679,9 +674,8 @@ public class SPlayerFFA : MonoBehaviour
     /// </summary>
     public void ContinueGrapple()
     {
-        SendPlayerData();
         timeLeftToGrapple -= Time.deltaTime;
-        ServerSend.PlayerContinueGrapple(id, timeLeftToGrapple);
+        ServerSend.PlayerContinueGrappleFFA(id, timeLeftToGrapple);
         if (timeLeftToGrapple < 0)
             StopGrapple();
 
@@ -693,7 +687,6 @@ public class SPlayerFFA : MonoBehaviour
         // (Game objects such as buildings must have a rotation for this section to work)
         if (Physics.Raycast(GrapplePoint, (transform.position - GrapplePoint), Vector3.Distance(GrapplePoint, transform.position) - 5, whatIsGrapple))
             StopGrapple();
-        SendPlayerData();
     }
 
     /// <summary>
@@ -708,7 +701,7 @@ public class SPlayerFFA : MonoBehaviour
         }
         IsGrappling = false;
         Destroy(joint);
-        ServerSend.PlayerStopGrapple(id);
+        ServerSend.PlayerStopGrappleFFA(id);
     }
 
 
@@ -724,7 +717,7 @@ public class SPlayerFFA : MonoBehaviour
         }
         else
             CancelInvoke("GrappleRecovery");
-        ServerSend.PlayerContinueGrapple(id, timeLeftToGrapple);
+        ServerSend.PlayerContinueGrappleFFA(id, timeLeftToGrapple);
     }
 
     #endregion
@@ -734,7 +727,47 @@ public class SPlayerFFA : MonoBehaviour
     /// </summary>
     public void SendPlayerData()
     {
-        ServerSend.PlayerPosition(player);
-        ServerSend.PlayerRotation(player, orientation.localRotation);
+        ServerSend.PlayerPositionFFA(player);
+        ServerSend.PlayerRotationFFA(player, orientation.localRotation);
+    }
+
+    /// <summary>
+    /// Take damage and update health and update stats
+    /// </summary>
+    /// <param name="_fromId"> Client that called this function </param>
+    /// <param name="_damage"> Value to subtract from health </param>
+    public void TakeDamage(int _fromId, float _damage)
+    {
+        if (player.health <= 0)
+            return;
+
+        player.health -= _damage;
+
+        if (player.health <= 0)
+        {
+            player.health = 0;
+            player.currentDeaths++;
+            ServerSend.UpdatePlayerDeathStats(id, player.currentDeaths);
+            Server.clients[_fromId].player.currentKills++;
+            ServerSend.UpdatePlayerKillStats(_fromId, Server.clients[_fromId].player.currentKills);
+            // Teleport to random spawnpoint
+            transform.position = EnvironmentGeneratorServerSide.spawnPoints[
+                                 Random.Range(0, EnvironmentGeneratorServerSide.spawnPoints.Count)];
+            ServerSend.PlayerPositionFFA(player);
+            StartCoroutine(Respawn());
+        }
+
+        ServerSend.PlayerHealthFFA(player);
+    }
+
+    /// <summary>
+    /// Respawns player after 5 seconds
+    /// </summary>
+    private IEnumerator Respawn()
+    {
+        yield return new WaitForSeconds(5f);
+
+        player.health = player.maxHealth;
+        ServerSend.PlayerRespawnedFFA(player);
     }
 }

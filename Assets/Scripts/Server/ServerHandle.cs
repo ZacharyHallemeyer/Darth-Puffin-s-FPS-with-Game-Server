@@ -146,7 +146,7 @@ public class ServerHandle
         Vector3 _position = _packet.ReadVector3();
         Vector3 _grapplePoint = _packet.ReadVector3();
 
-        ServerSend.OtherPlayerContinueGrapple(_fromClient, _position, _grapplePoint);
+        ServerSend.OtherPlayerContinueGrappleFFA(_fromClient, _position, _grapplePoint);
     }
 
     /// <summary>

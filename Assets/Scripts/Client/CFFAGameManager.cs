@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class CFFAGameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static CFFAGameManager instance;
 
     public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
     public static Dictionary<int, PlayerActionsFFA> playersActions = new Dictionary<int, PlayerActionsFFA>();
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
             _player = Instantiate(playerPrefab, _position, _rotation);
             _player.GetComponent<PlayerManager>().Initialize(_id, _username);
             players.Add(_id, _player.GetComponent<PlayerManager>());
-            foreach (PlayerManager.GunInformation _gunInfo in GameManager.players[_id].allGunInformation.Values)
+            foreach (PlayerManager.GunInformation _gunInfo in CFFAGameManager.players[_id].allGunInformation.Values)
             {
                 if (_gunInfo.name == _gunName)
                 {

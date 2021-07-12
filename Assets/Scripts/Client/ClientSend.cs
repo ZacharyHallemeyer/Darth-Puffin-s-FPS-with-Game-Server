@@ -71,7 +71,7 @@ public class ClientSend : MonoBehaviour
         {
             _packet.Write(_moveDirection);
             // Orientation needs to be the first child of player
-            _packet.Write(GameManager.players[ClientClientSide.instance.myId].transform.GetChild(0).transform.localRotation);
+            _packet.Write(CFFAGameManager.players[ClientClientSide.instance.myId].transform.GetChild(0).transform.localRotation);
 
             SendUDPData(_packet);
         }

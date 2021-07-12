@@ -452,9 +452,9 @@ public class PlayerActionsFFA : MonoBehaviour
     /// <param name="_gunName"> client's current weapon </param>
     public void ShowOtherPlayerActiveWeapon(int _id, string _gunName)
     {
-        if (GameManager.players.TryGetValue(_id, out PlayerManager _player))
+        if (CFFAGameManager.players.TryGetValue(_id, out PlayerManager _player))
         {
-            _player = GameManager.players[_id];
+            _player = CFFAGameManager.players[_id];
         }
         else return;
 
@@ -503,9 +503,9 @@ public class PlayerActionsFFA : MonoBehaviour
     /// <param name="_grapplePoint"> other player's grapple point </param>
     public void DrawOtherPlayerRope(int _otherPlayerId, Vector3 _position, Vector3 _grapplePoint)
     {
-        GameManager.players[_otherPlayerId].lineRenderer.positionCount = 2;
-        GameManager.players[_otherPlayerId].lineRenderer.SetPosition(0, _position);
-        GameManager.players[_otherPlayerId].lineRenderer.SetPosition(1, _grapplePoint);
+        CFFAGameManager.players[_otherPlayerId].lineRenderer.positionCount = 2;
+        CFFAGameManager.players[_otherPlayerId].lineRenderer.SetPosition(0, _position);
+        CFFAGameManager.players[_otherPlayerId].lineRenderer.SetPosition(1, _grapplePoint);
     }
 
     /// <summary>

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.IO;
+using System.Net;
 
 public class Lobby : MonoBehaviour
 {
@@ -51,6 +53,24 @@ public class Lobby : MonoBehaviour
             lobbyRows[_clientId - 1].username = _lobbyRow.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             lobbyRows[_clientId - 1].username.text = ClientClientSide.allClients[_clientId];
         }
+        Debug.Log(GetIPAddress());
+    }
+
+    static string GetIPAddress()
+    {
+        string address = "";
+        WebRequest request = WebRequest.Create("http://checkip.dyndns.org/");
+        using (WebResponse response = request.GetResponse())
+        using (StreamReader stream = new StreamReader(response.GetResponseStream()))
+        {
+            address = stream.ReadToEnd();
+        }
+
+        int first = address.IndexOf("Address: ") + 9;
+        int last = address.LastIndexOf("</body>");
+        address = address.Substring(first, last - first);
+
+        return address;
     }
 
     /// <summary>

@@ -136,7 +136,7 @@ public class ServerSend
 
     /// <summary>Sends a player's updated position to all clients.</summary>
     /// <param name="_player">The player whose position to update.</param>
-    public static void PlayerPosition(SPlayer _player)
+    public static void PlayerPositionFFA(SPlayer _player)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerPosition))
         {
@@ -149,7 +149,7 @@ public class ServerSend
 
     /// <summary>Sends a player's updated rotation to all clients including himself </summary>
     /// <param name="_player">The player whose rotation to update.</param>
-    public static void PlayerRotation(SPlayer _player, Quaternion orientation)
+    public static void PlayerRotationFFA(SPlayer _player, Quaternion orientation)
     {
         // Send player rotation and orientation to all clients
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerRotation))
@@ -162,24 +162,10 @@ public class ServerSend
     }
 
     /// <summary>
-    /// Tells all clients that a client has disconnected
-    /// </summary>
-    /// <param name="_playerId"> The player's id that disconnected</param>
-    public static void PlayerDisconnect(int _playerId)
-    {
-        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerDisconnected))
-        {
-            _packet.Write(_playerId);
-
-            SendTCPDataToAll(_packet);
-        }
-    }
-
-    /// <summary>
     /// Sends a players health to all clients and sends to all clients that another player has taken damage(used for taken damage animations)
     /// </summary>
     /// <param name="_player"> Player that health has changed </param>
-    public static void PlayerHealth(SPlayer _player)
+    public static void PlayerHealthFFA(SPlayer _player)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerHealth))
         {
@@ -211,7 +197,7 @@ public class ServerSend
     /// Tells all clients to respawn a player
     /// </summary>
     /// <param name="_player"> player to be respawned </param>
-    public static void PlayerRespawned(SPlayer _player)
+    public static void PlayerRespawnedFFA(SPlayer _player)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerRespawned))
         {
@@ -228,7 +214,7 @@ public class ServerSend
     /// <param name="_position"> planet's position </param>
     /// <param name="_localScale"> planet's local scale </param>
     /// <param name="_gravityMaxDistance"> planet's gravity max distance </param>
-    public static void CreateNewPlanet(int _toClient, Vector3 _position, Vector3 _localScale, float _gravityMaxDistance)
+    public static void CreateNewPlanetFFA(int _toClient, Vector3 _position, Vector3 _localScale, float _gravityMaxDistance)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.createNewPlanet))
         {
@@ -248,7 +234,7 @@ public class ServerSend
     /// <param name="_localScale"> non gravity object's local scale </param>
     /// <param name="_rotation"> non gravity object's rotation </param>
     /// <param name="_objectName"> non gravity object's name </param>
-    public static void CreateNonGravityObject(int _toClient, Vector3 _position, Vector3 _localScale, Quaternion _rotation
+    public static void CreateNonGravityObjectFFA(int _toClient, Vector3 _position, Vector3 _localScale, Quaternion _rotation
                                               , string _objectName)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.createNewNonGravityObject))
@@ -268,7 +254,7 @@ public class ServerSend
     /// <param name="_toClient"> Client to send info </param>
     /// <param name="_position"> boundary position </param>
     /// <param name="radius"> boundary radius </param>
-    public static void CreateBoundary(int _toClient, Vector3 _position, float radius)
+    public static void CreateBoundaryFFA(int _toClient, Vector3 _position, float radius)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.createBoundary))
         {
@@ -283,7 +269,7 @@ public class ServerSend
     /// Send specific client info to start grapple on client side
     /// </summary>
     /// <param name="_toClient"> client to send info to </param>
-    public static void PlayerStartGrapple(int _toClient)
+    public static void PlayerStartGrappleFFA(int _toClient)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerStartGrapple))
         {
@@ -298,7 +284,7 @@ public class ServerSend
     /// </summary>
     /// <param name="_toClient"> client to send info </param>
     /// <param name="_currentGrappleTime"> clients current grapple time </param>
-    public static void PlayerContinueGrapple(int _toClient, float _currentGrappleTime)
+    public static void PlayerContinueGrappleFFA(int _toClient, float _currentGrappleTime)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerContinueGrapple))
         {
@@ -315,7 +301,7 @@ public class ServerSend
     /// <param name="_fromClient"> client that is grappling </param>
     /// <param name="_position"> client's position </param>
     /// <param name="_grapplePoint"> client's grapple point </param>
-    public static void OtherPlayerContinueGrapple(int _fromClient, Vector3 _position, Vector3 _grapplePoint)
+    public static void OtherPlayerContinueGrappleFFA(int _fromClient, Vector3 _position, Vector3 _grapplePoint)
     {
         foreach(ClientServerSide _client in Server.clients.Values)
         {
@@ -341,7 +327,7 @@ public class ServerSend
     /// Send specific client info to start grapple on client side
     /// </summary>
     /// <param name="_toClient"> Client to send info to </param>
-    public static void PlayerStopGrapple(int _toClient)
+    public static void PlayerStopGrappleFFA(int _toClient)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerStopGrapple))
         {
@@ -373,9 +359,8 @@ public class ServerSend
     /// <param name="_fromClient"> client that changed weapon </param>
     /// <param name="_toClient"> client to send info </param>
     /// <param name="_gunName"> client that changed weapons new weapon's name </param>
-    public static void OtherPlayerSwitchedWeapon(int _fromClient, int _toClient, string _gunName)
+    public static void OtherPlayerSwitchedWeaponFFA(int _fromClient, int _toClient, string _gunName)
     {
-        Debug.Log("8");
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.otherPlayerSwitchedWeapon))
         {
             _packet.Write(_fromClient);
@@ -384,7 +369,6 @@ public class ServerSend
 
             SendTCPData(_toClient, _packet);
         }
-        Debug.Log("8");
     }
 
     /// <summary>
@@ -393,7 +377,7 @@ public class ServerSend
     /// <param name="_toClient"> client to send data </param>
     /// <param name="_currentAmmo"> clients current ammo </param>
     /// <param name="_reserveAmmo"> clients current reserve ammo </param>
-    public static void PlayerSingleFire(int _toClient, int _currentAmmo, int _reserveAmmo)
+    public static void PlayerSingleFireFFA(int _toClient, int _currentAmmo, int _reserveAmmo)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerSinglefire))
         {
@@ -411,7 +395,7 @@ public class ServerSend
     /// <param name="_toClient"> client to send data </param>
     /// <param name="_currentAmmo"> client's current ammo </param>
     /// <param name="_reserveAmmo"> client's current reserve ammo</param>
-    public static void PlayerStartAutomaticFire(int _toClient, int _currentAmmo, int _reserveAmmo)
+    public static void PlayerStartAutomaticFireFFA(int _toClient, int _currentAmmo, int _reserveAmmo)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerStartAutomaticFire))
         {
@@ -429,7 +413,7 @@ public class ServerSend
     /// <param name="_toClient"> client to send data </param>
     /// <param name="_currentAmmo"> client's current ammo </param>
     /// <param name="_reserveAmmo"> client's current reserve ammo</param>
-    public static void PlayerContinueAutomaticFire(int _toClient, int _currentAmmo, int _reserveAmmo)
+    public static void PlayerContinueAutomaticFireFFA(int _toClient, int _currentAmmo, int _reserveAmmo)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerContinueAutomaticFire))
         {
@@ -445,7 +429,7 @@ public class ServerSend
     /// Sends info to specific client to stop automatic fire on client side
     /// </summary>
     /// <param name="_toClient"> client to send data </param>
-    public static void PlayerStopAutomaticFire(int _toClient)
+    public static void PlayerStopAutomaticFireFFA(int _toClient)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerStopAutomaticFire))
         {
@@ -461,7 +445,7 @@ public class ServerSend
     /// <param name="_toClient"> client to send data </param>
     /// <param name="_currentAmmo"> client's current ammo </param>
     /// <param name="_reserveAmmo"> client's current reserve ammo</param>
-    public static void PlayerReload(int _toClient, int _currentAmmo, int _reserveAmmo)
+    public static void PlayerReloadFFA(int _toClient, int _currentAmmo, int _reserveAmmo)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerReload))
         {
@@ -480,7 +464,7 @@ public class ServerSend
     /// <param name="_gunName"> client's new weapon name </param>
     /// <param name="_currentAmmo"> client's current ammo </param>
     /// <param name="_reserveAmmo"> client's current reserve ammo</param>
-    public static void PlayerSwitchWeapon(int _toClient, string _gunName, int _currentAmmo, int _reserveAmmo)
+    public static void PlayerSwitchWeaponFFA(int _toClient, string _gunName, int _currentAmmo, int _reserveAmmo)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerSwitchWeapon))
         {
@@ -498,7 +482,7 @@ public class ServerSend
     /// </summary>
     /// <param name="_toClient"> client to send info </param>
     /// <param name="_hitPoint"> position where shot landed </param>
-    public static void PlayerShotLanded(int _toClient, Vector3 _hitPoint)
+    public static void PlayerShotLandedFFA(int _toClient, Vector3 _hitPoint)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerShotLanded))
         {
@@ -514,7 +498,7 @@ public class ServerSend
     /// </summary>
     /// <param name="_toClient"> client to send info </param>
     /// <param name="_currentJetPackTime"> client's current jet pack time </param>
-    public static void PlayerContinueJetPack(int _toClient, float _currentJetPackTime)
+    public static void PlayerContinueJetPackFFA(int _toClient, float _currentJetPackTime)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerContinueJetPack))
         {
@@ -525,37 +509,6 @@ public class ServerSend
         }
     }
 
-    /// <summary>
-    /// Updata client's kill stats to all clients
-    /// </summary>
-    /// <param name="_fromClient"> Client to update kill stats </param>
-    /// <param name="_currentKills"> Client's current kill stats </param>
-    public static void UpdatePlayerKillStats(int _fromClient, int _currentKills)
-    {
-        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.updatePlayerKillStats))
-        {
-            _packet.Write(_fromClient);
-            _packet.Write(_currentKills);
-
-            SendTCPDataToAll(_packet);
-        }
-    }
-
-    /// <summary>
-    /// Updata client's death stats to all clients
-    /// </summary>
-    /// <param name="_fromClient"> Client to update death stats </param>
-    /// <param name="_currentDeaths"> Client's current death stats </param>
-    public static void UpdatePlayerDeathStats(int _fromClient, int _currentDeaths)
-    {
-        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.updatePlayerDeathStats))
-        {
-            _packet.Write(_fromClient);
-            _packet.Write(_currentDeaths);
-
-            SendTCPDataToAll(_packet);
-        }
-    }
 
     #endregion
 
@@ -565,7 +518,6 @@ public class ServerSend
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.environmentReady))
         {
-            Debug.Log("Environment ready is SENDING");
             SendTCPDataToAll(_packet);
         }
     }
@@ -616,8 +568,9 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.username);
-            // TODO Change to spawn points
-            _packet.Write(_player.transform.position);
+            //_packet.Write(_player.transform.position);
+            _packet.Write(InfectionEnvironmentGenerator.spawnPoints[
+                          Random.Range(0, InfectionEnvironmentGenerator.spawnPoints.Count)]);
             _packet.Write(_player.transform.rotation);
             _packet.Write(_sPlayerInfection.currentGun.name);
             _packet.Write(_sPlayerInfection.currentGun.currentAmmo);
@@ -678,20 +631,6 @@ public class ServerSend
         {
             _packet.Write(_id);
             _packet.Write(_localScale);
-
-            SendTCPDataToAll(_packet);
-        }
-    }
-
-    /// <summary>
-    /// Tells all clients that a client has disconnected
-    /// </summary>
-    /// <param name="_playerId"> The player's id that disconnected</param>
-    public static void PlayerDisconnectInfection(int _playerId)
-    {
-        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerDisconnected))
-        {
-            _packet.Write(_playerId);
 
             SendTCPDataToAll(_packet);
         }
@@ -883,6 +822,52 @@ public class ServerSend
     }
 
     #endregion
+
+    /// <summary>
+    /// Updata client's kill stats to all clients
+    /// </summary>
+    /// <param name="_fromClient"> Client to update kill stats </param>
+    /// <param name="_currentKills"> Client's current kill stats </param>
+    public static void UpdatePlayerKillStats(int _fromClient, int _currentKills)
+    {
+        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.updatePlayerKillStats))
+        {
+            _packet.Write(_fromClient);
+            _packet.Write(_currentKills);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    /// <summary>
+    /// Updata client's death stats to all clients
+    /// </summary>
+    /// <param name="_fromClient"> Client to update death stats </param>
+    /// <param name="_currentDeaths"> Client's current death stats </param>
+    public static void UpdatePlayerDeathStats(int _fromClient, int _currentDeaths)
+    {
+        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.updatePlayerDeathStats))
+        {
+            _packet.Write(_fromClient);
+            _packet.Write(_currentDeaths);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    /// <summary>
+    /// Tells all clients that a client has disconnected
+    /// </summary>
+    /// <param name="_playerId"> The player's id that disconnected</param>
+    public static void PlayerDisconnect(int _playerId)
+    {
+        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerDisconnected))
+        {
+            _packet.Write(_playerId);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
 
     #endregion
 }
