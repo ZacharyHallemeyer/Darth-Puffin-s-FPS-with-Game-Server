@@ -12,7 +12,6 @@ public class ServerHandle
     /// <param name="_packet"> client id and client username </param>
     public static void WelcomeReceived(int _fromClient, PackerServerSide _packet)
     {
-        Debug.Log("Welcome Recieved");
         int _clientIdCheck = _packet.ReadInt();
         string _username = _packet.ReadString();
 
@@ -54,7 +53,7 @@ public class ServerHandle
                     _client.SendIntoGameFreeForAll();
                     break;
                 case "Infection":
-                    _client.SendIntoGameFreeForAll();
+                    _client.SendIntoGameInfection();
                     break;
                 case "WaveMode":
                     _client.SendIntoGameFreeForAll();
@@ -64,6 +63,8 @@ public class ServerHandle
             }
         }
     }
+
+    #region Player Free For All
 
     /// <summary>
     /// Start generate game environment
@@ -85,7 +86,7 @@ public class ServerHandle
         Vector2 _moveDirection = _packet.ReadVector2();
         Quaternion _rotation = _packet.ReadQuaternion();
 
-        Server.clients[_fromClient].player.SetMovementInput(_moveDirection, _rotation);
+        Server.clients[_fromClient].sPlayerFFA.SetMovementInput(_moveDirection, _rotation);
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ public class ServerHandle
     {
         Vector3 _direction = _packet.ReadVector3();
 
-        Server.clients[_fromClient].player.JetPackMovement(_direction);
+        Server.clients[_fromClient].sPlayerFFA.JetPackMovement(_direction);
     }
 
     /// <summary>
@@ -109,7 +110,7 @@ public class ServerHandle
     {
         bool _isAnimInProgress = _packet.ReadBool();
 
-        Server.clients[_fromClient].player.SetActionInput(_isAnimInProgress);
+        Server.clients[_fromClient].sPlayerFFA.SetActionInput(_isAnimInProgress);
     }
 
     /// <summary>
@@ -119,7 +120,7 @@ public class ServerHandle
     /// <param name="_packet"> NULL </param>
     public static void PlayerMagnetize(int _fromClient, PackerServerSide _packet)
     {
-        Server.clients[_fromClient].player.PlayerMagnetize();
+        Server.clients[_fromClient].sPlayerFFA.PlayerMagnetize();
     }
 
     /// <summary>
@@ -132,7 +133,7 @@ public class ServerHandle
         //Server.InitializeServerData();
         Vector3 _direction = _packet.ReadVector3();
 
-        Server.clients[_fromClient].player.StartGrapple(_direction);
+        Server.clients[_fromClient].sPlayerFFA.StartGrapple(_direction);
     }
 
     /// <summary>
@@ -155,7 +156,7 @@ public class ServerHandle
     /// <param name="_packet"> NULL </param>
     public static void PlayerStopGrapple(int _fromClient, PackerServerSide _packet)
     {
-        Server.clients[_fromClient].player.StopGrapple();
+        Server.clients[_fromClient].sPlayerFFA.StopGrapple();
     }
 
     /// <summary>
@@ -168,7 +169,7 @@ public class ServerHandle
         Vector3 _firePoint = _packet.ReadVector3();
         Vector3 _fireDirection = _packet.ReadVector3();
 
-        Server.clients[_fromClient].player.ShootController(_firePoint, _fireDirection);
+        Server.clients[_fromClient].sPlayerFFA.ShootController(_firePoint, _fireDirection);
     }
 
     /// <summary>
@@ -181,7 +182,7 @@ public class ServerHandle
         Vector3 _firePoint = _packet.ReadVector3();
         Vector3 _fireDirection = _packet.ReadVector3();
 
-        Server.clients[_fromClient].player.UpdateShootDirection(_firePoint, _fireDirection);
+        Server.clients[_fromClient].sPlayerFFA.UpdateShootDirection(_firePoint, _fireDirection);
     }
 
     /// <summary>
@@ -191,7 +192,7 @@ public class ServerHandle
     /// <param name="_packet"> NULL </param>
     public static void PlayerStopShoot(int _fromClient, PackerServerSide _packet)
     {
-        Server.clients[_fromClient].player.StopShootContoller();
+        Server.clients[_fromClient].sPlayerFFA.StopShootContoller();
     }
 
     /// <summary>
@@ -201,7 +202,7 @@ public class ServerHandle
     /// <param name="_packet"> NULL </param>
     public static void PlayerReload(int _fromClient, PackerServerSide _packet)
     {
-        Server.clients[_fromClient].player.Reload();
+        Server.clients[_fromClient].sPlayerFFA.Reload();
     }
 
     /// <summary>
@@ -211,6 +212,75 @@ public class ServerHandle
     /// <param name="_packet"> NULL </param>
     public static void PlayerSwitchWeapon(int _fromClient, PackerServerSide _packet)
     {
-        Server.clients[_fromClient].player.SwitchWeapon();
+        Server.clients[_fromClient].sPlayerFFA.SwitchWeapon();
     }
+
+    #endregion
+
+    #region Player Infection
+
+    /// <summary>
+    /// Start generate game environment
+    /// </summary>
+    /// <param name="_fromClient"> client that called this method </param>
+    /// <param name="_packet"> NULL </param>
+    public static void StartGenerateEnvironmentInfection(int _fromClient, PackerServerSide _packet)
+    {
+        InfectionEnvironmentGenerator.instance.GenerateEnvironment();
+    }
+
+    /// <summary>
+    /// Collects input from client in regard to player movement
+    /// </summary>
+    /// <param name="_fromClient"> Client that is connected to new input </param>
+    /// <param name="_packet"> move direction and rotation </param>
+    public static void PlayerMovementInfection(int _fromClient, PackerServerSide _packet)
+    {
+        Vector2 _moveDirection = _packet.ReadVector2();
+        Quaternion _rotation = _packet.ReadQuaternion();
+
+        Server.clients[_fromClient].sPlayerInfection.SetMovementInput(_moveDirection, _rotation);
+    }
+
+    public static void PlayerJumpInfection (int _fromClient, PackerServerSide _packet)
+    {
+        Server.clients[_fromClient].sPlayerInfection.Jump();
+    }
+
+    public static void PlayerCrouchInfection(int _fromClient, PackerServerSide _packet)
+    {
+        Server.clients[_fromClient].sPlayerInfection.CrouchController();
+    }
+
+    public static void PlayerShootInfection(int _fromClient, PackerServerSide _packet)
+    {
+        Vector3 _firePoint = _packet.ReadVector3();
+        Vector3 _fireDirection = _packet.ReadVector3();
+
+        Server.clients[_fromClient].sPlayerInfection.ShootController(_firePoint, _fireDirection);
+    }
+
+    public static void PlayerActionsInfection(int _fromClient, PackerServerSide _packet)
+    {
+        bool _isAnimInProgress = _packet.ReadBool();
+
+        Server.clients[_fromClient].sPlayerInfection.SetActionInput(_isAnimInProgress);
+    }
+
+    public static void PlayerMeleeInfection(int _fromClient, PackerServerSide _packet)
+    {
+        //Server.clients[_fromClient].sPlayerInfection
+    }
+
+    public static void PlayerReloadInfection(int _fromClient, PackerServerSide _packet)
+    {
+        Server.clients[_fromClient].sPlayerInfection.Reload();
+    }
+
+    public static void PlayerSwitchWeaponInfection(int _fromClient, PackerServerSide _packet)
+    {
+        Server.clients[_fromClient].sPlayerInfection.SwitchWeapon();
+    }
+
+    #endregion
 }

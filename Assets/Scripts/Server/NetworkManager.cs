@@ -43,8 +43,7 @@ public class NetworkManager : MonoBehaviour
             if (SceneManager.GetSceneAt(i).name[0] == 'S')
                 _sceneName = SceneManager.GetSceneAt(i).name.Substring(6);
         }
-        Debug.Log(_sceneName);
-        switch(SceneManager.GetActiveScene().name.Substring(6))
+        switch(_sceneName)
         {
             case "FreeForAll":
                 Server.ChangeServerDataToFreeForAll();
@@ -64,23 +63,13 @@ public class NetworkManager : MonoBehaviour
     }
 
     // Spawns player
-    public PlayerFFA InstantiatePlayerFFA()
+    public SPlayer InstantiatePlayerFFA()
     {
-        return Instantiate(playerPrefabFFA, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<PlayerFFA>();
-        /*
-        return Instantiate(playerPrefab, 
-                           EnvironmentGenerator.spawnPoints[Random.Range(0, EnvironmentGenerator.spawnPoints.Count)]
-                           , Quaternion.identity).GetComponent<Player>();
-        */
+        return Instantiate(playerPrefabFFA, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<SPlayer>();
     }
 
-    public PlayerFFA InstantiatePlayerInfection()
+    public SPlayer InstantiatePlayerInfection()
     {
-        return Instantiate(playerPrefabInfection, new Vector3(0f, 0.5f, 0f), Quaternion.identity).GetComponent<PlayerFFA>();
-        /*
-        return Instantiate(playerPrefab, 
-                           EnvironmentGenerator.spawnPoints[Random.Range(0, EnvironmentGenerator.spawnPoints.Count)]
-                           , Quaternion.identity).GetComponent<Player>();
-        */
+        return Instantiate(playerPrefabInfection, new Vector3(0f, 2f, 0f), Quaternion.identity).GetComponent<SPlayer>();
     }
 }

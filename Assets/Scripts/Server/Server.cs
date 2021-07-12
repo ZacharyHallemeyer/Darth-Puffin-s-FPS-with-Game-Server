@@ -129,8 +129,8 @@ public class Server
         {
             { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
             { (int)ClientPackets.startGame, ServerHandle.SendLobbyIntoGame },
-            { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironment },
             /*
+            { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironment },
             { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovementFFA },
             { (int)ClientPackets.playerJetPackMovement, ServerHandle.PlayerJetPackMovement },
             { (int)ClientPackets.playerActions, ServerHandle.PlayerActions },
@@ -145,7 +145,7 @@ public class Server
             { (int)ClientPackets.playerMagnetize, ServerHandle.PlayerMagnetize },
             */
         };
-        Debug.Log("Initialized packets.");
+        Debug.Log("Initialized Server base packets.");
     }
 
     public static void ChangeServerDataToFreeForAll ()
@@ -168,7 +168,7 @@ public class Server
             { (int)ClientPackets.playerSwitchWeapon, ServerHandle.PlayerSwitchWeapon },
             { (int)ClientPackets.playerMagnetize, ServerHandle.PlayerMagnetize },
         };
-        Debug.Log("Initialized packets.");
+        Debug.Log("Initialized Server Free For All packets.");
     }
 
     public static void ChangeServerDataToInfection()
@@ -177,21 +177,16 @@ public class Server
         {
             { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
             { (int)ClientPackets.startGame, ServerHandle.SendLobbyIntoGame },
-            { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironment },
-            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovementFFA },
-            { (int)ClientPackets.playerJetPackMovement, ServerHandle.PlayerJetPackMovement },
-            { (int)ClientPackets.playerActions, ServerHandle.PlayerActions },
-            { (int)ClientPackets.playerStartGrapple, ServerHandle.PlayerStartGrapple },
-            { (int)ClientPackets.playerContinueGrappling, ServerHandle.PlayerContinueGrappling },
-            { (int)ClientPackets.playerStopGrapple, ServerHandle.PlayerStopGrapple },
-            { (int)ClientPackets.playerStartShoot, ServerHandle.PlayerStartShoot },
-            { (int)ClientPackets.playerUpdateShootDirection, ServerHandle.PlayerUpdateShootDirection },
-            { (int)ClientPackets.playerStopShoot, ServerHandle.PlayerStopShoot },
-            { (int)ClientPackets.playerReload, ServerHandle.PlayerReload },
-            { (int)ClientPackets.playerSwitchWeapon, ServerHandle.PlayerSwitchWeapon },
-            { (int)ClientPackets.playerMagnetize, ServerHandle.PlayerMagnetize },
+            { (int)ClientPackets.startGenerateEnvironment, ServerHandle.StartGenerateEnvironmentInfection },
+            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovementInfection },
+            { (int)ClientPackets.playerJump, ServerHandle.PlayerJumpInfection },
+            { (int)ClientPackets.playerCrouch, ServerHandle.PlayerCrouchInfection },
+            { (int)ClientPackets.playerActions, ServerHandle.PlayerActionsInfection},
+            { (int)ClientPackets.playerStartShoot, ServerHandle.PlayerShootInfection },
+            { (int)ClientPackets.playerReload, ServerHandle.PlayerReloadInfection },
+            { (int)ClientPackets.playerSwitchWeapon, ServerHandle.PlayerSwitchWeaponInfection},
         };
-        Debug.Log("Initialized packets.");
+        Debug.Log("Initialized Server Infection Packets.");
     }
 
     /// <summary>

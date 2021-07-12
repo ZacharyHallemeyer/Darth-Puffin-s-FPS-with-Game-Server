@@ -146,7 +146,10 @@ public class MainMenu : MonoBehaviour
         yield return new WaitForEndOfFrame();
         if (__asyncOperation.isDone)
         {
-            ClientSend.StartGenerateEnvironment();
+            if (SceneManager.GetActiveScene().name.Substring(6) == "FreeForAll")
+                ClientSend.StartGenerateEnvironment();
+            else if (SceneManager.GetActiveScene().name.Substring(6) == "Infection")
+                ClientSend.StartGenerateEnvironmentInfection();
             UnloadScene(_sceneToUnload);
         }
         else

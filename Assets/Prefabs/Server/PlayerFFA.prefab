@@ -74,8 +74,9 @@ GameObject:
   - component: {fileID: 7278839664658962547}
   - component: {fileID: 7171154087823344460}
   - component: {fileID: 6120784216943288319}
+  - component: {fileID: 4648340329848711695}
   m_Layer: 8
-  m_Name: Player
+  m_Name: PlayerFFA
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -193,6 +194,7 @@ MonoBehaviour:
   maxHealth: 100
   rb: {fileID: 7171154087823344460}
   orientation: {fileID: 1345018100387557002}
+  sPlayerFFA: {fileID: 4648340329848711695}
   currentKills: 0
   currentDeaths: 0
   whatIsGround:
@@ -227,6 +229,56 @@ MonoBehaviour:
   whatIsShootable:
     serializedVersion: 2
     m_Bits: 5888
+  isShooting: 0
+  isAnimInProgress: 0
+--- !u!114 &4648340329848711695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7278839664658962546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5daf6884834dd44c9466ed5b477e12b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  username: 
+  rb: {fileID: 7171154087823344460}
+  orientation: {fileID: 1345018100387557002}
+  player: {fileID: 6120784216943288319}
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 2560
+  isGrounded: 0
+  groundCheck: {fileID: 7974821428153464236}
+  groundDistance: 5
+  whatIsGravityObject:
+    serializedVersion: 2
+    m_Bits: 2048
+  gravityMaxDistance: 10
+  gravityForce: 100
+  maxDistanceFromOrigin: 600
+  forceBackToOrigin: 4500
+  jetPackForce: 20
+  isJetPackRecoveryActive: 1
+  maxJetPackPower: 2.1
+  currentJetPackPower: 0
+  jetPackBurstCost: 0.5
+  jetPackRecoveryIncrementor: 0.01
+  whatIsGrapple:
+    serializedVersion: 2
+    m_Bits: 3840
+  maxGrappleTime: 1000
+  grappleRecoveryIncrement: 50
+  timeLeftToGrapple: 0
+  grappleTimeLimiter: 0
+  magnetizeForce: 100
+  gunNames: []
+  whatIsShootable:
+    serializedVersion: 2
+    m_Bits: 4294967295
   isShooting: 0
   isAnimInProgress: 0
 --- !u!1 &7612817930700101615

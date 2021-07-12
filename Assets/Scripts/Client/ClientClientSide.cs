@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Net;
 using System.Net.Sockets;
 using System;
@@ -53,7 +54,26 @@ public class ClientClientSide : MonoBehaviour
         tcp = new TCP();
         udp = new UDP();
 
-        InitializeClientData();
+        int _sceneCount = SceneManager.sceneCount;
+        string _sceneName = "";
+
+        for (int i = 0; i < _sceneCount; i++)
+        {
+            if (SceneManager.GetSceneAt(i).name[0] == 'S' || SceneManager.GetSceneAt(i).name[0] == 'C')
+                _sceneName = SceneManager.GetSceneAt(i).name.Substring(6);
+        }
+        switch (_sceneName)
+        {
+            case "FreeForAll":
+                ChangeClientDataToFreeForAll();
+                break;
+            case "Infection":
+                ChangeClientDataToInfection();
+                break;
+            default:
+                InitializeClientData();
+                break;
+        }
 
         isConnected = true;
         tcp.Connect();
@@ -286,6 +306,45 @@ public class ClientClientSide : MonoBehaviour
         {
             { (int)ServerPackets.welcome, ClientHandle.Welcome },
             { (int)ServerPackets.addClient, ClientHandle.AddClient },
+            /*
+            { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayerInfection },
+            { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
+            { (int)ServerPackets.playerRotation, ClientHandle.PlayerRotation },
+            { (int)ServerPackets.playerDisconnected, ClientHandle.PlayerDisconnected },
+            { (int)ServerPackets.otherPlayerTakenDamage, ClientHandle.OtherPlayerTakenDamage},
+            { (int)ServerPackets.playerHealth, ClientHandle.PlayerHealth },
+            { (int)ServerPackets.playerRespawned, ClientHandle.PlayerRespawned },
+            { (int)ServerPackets.createNewPlanet, ClientHandle.CreateNewPlanet },
+            { (int)ServerPackets.createNewNonGravityObject, ClientHandle.CreateNewNonGravityObject },
+            { (int)ServerPackets.createBoundary, ClientHandle.CreateBoundary },
+            { (int)ServerPackets.playerStartGrapple, ClientHandle.PlayerStartGrapple },
+            { (int)ServerPackets.playerContinueGrapple, ClientHandle.PlayerContinueGrapple },
+            { (int)ServerPackets.otherPlayerContinueGrapple, ClientHandle.OtherPlayerContinueGrapple },
+            { (int)ServerPackets.otherPlayerStopGrapple, ClientHandle.OtherPlayerStopGrapple },
+            { (int)ServerPackets.playerStopGrapple, ClientHandle.PlayerStopGrapple },
+            { (int)ServerPackets.otherPlayerSwitchedWeapon, ClientHandle.OtherPlayerSwitchedWeapon },
+            { (int)ServerPackets.playerSinglefire, ClientHandle.PlayerSingleFire },
+            { (int)ServerPackets.playerStartAutomaticFire, ClientHandle.PlayerStartAutomaticFire },
+            { (int)ServerPackets.playerContinueAutomaticFire, ClientHandle.PlayerContinueAutomaticFire },
+            { (int)ServerPackets.playerStopAutomaticFire, ClientHandle.PlayerStopAutomaticFire },
+            { (int)ServerPackets.playerReload, ClientHandle.PlayerReload },
+            { (int)ServerPackets.playerSwitchWeapon, ClientHandle.PlayerSwitchWeapon },
+            { (int)ServerPackets.playerShotLanded, ClientHandle.PlayerShotLanded },
+            { (int)ServerPackets.playerContinueJetPack, ClientHandle.PlayerContinueJetPack },
+            { (int)ServerPackets.updatePlayerKillStats, ClientHandle.UpdatePlayerKillStats },
+            { (int)ServerPackets.updatePlayerDeathStats, ClientHandle.UpdatePlayerDeathStats },
+            */
+        };
+        Debug.Log("Initialized packets.");
+    }
+
+    public void ChangeClientDataToFreeForAll()
+    {
+        packetHandlers = new Dictionary<int, PacketHandler>()
+        {
+            { (int)ServerPackets.welcome, ClientHandle.Welcome },
+            { (int)ServerPackets.addClient, ClientHandle.AddClient },
+            { (int)ServerPackets.environmentReady, ClientHandle.EnvironmentReadyFreeForAll },
             { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
             { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
             { (int)ServerPackets.playerRotation, ClientHandle.PlayerRotation },
@@ -313,7 +372,39 @@ public class ClientClientSide : MonoBehaviour
             { (int)ServerPackets.updatePlayerKillStats, ClientHandle.UpdatePlayerKillStats },
             { (int)ServerPackets.updatePlayerDeathStats, ClientHandle.UpdatePlayerDeathStats },
         };
-        Debug.Log("Initialized packets.");
+        Debug.Log("Initialized Client Free For All Packets.");
+    }
+
+    public void ChangeClientDataToInfection()
+    {
+        packetHandlers = new Dictionary<int, PacketHandler>()
+        {
+            { (int)ServerPackets.welcome, ClientHandle.Welcome },
+            { (int)ServerPackets.addClient, ClientHandle.AddClient },
+            { (int)ServerPackets.environmentReady, ClientHandle.EnvironmentReadyInfection },
+            { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayerInfection },
+            { (int)ServerPackets.playerPosition, ClientHandle.PlayerPositionInfection },
+            { (int)ServerPackets.playerRotation, ClientHandle.PlayerRotationInfection },
+            { (int)ServerPackets.playerDisconnected, ClientHandle.PlayerDisconnectedInfection },
+            { (int)ServerPackets.otherPlayerTakenDamage, ClientHandle.OtherPlayerTakenDamage },
+            { (int)ServerPackets.playerHealth, ClientHandle.PlayerHealthInfection },
+            { (int)ServerPackets.playerRespawned, ClientHandle.PlayerRespawnedInfection },
+            { (int)ServerPackets.otherPlayerSwitchedWeapon, ClientHandle.OtherPlayerSwitchedWeaponInfection },
+            { (int)ServerPackets.playerSinglefire, ClientHandle.PlayerShootInfection },
+            { (int)ServerPackets.playerReload, ClientHandle.PlayerReloadInfection },
+            { (int)ServerPackets.playerSwitchWeapon, ClientHandle.PlayerSwitchWeaponInfection },
+            { (int)ServerPackets.playerShotLanded, ClientHandle.PlayerShotLandedInfection },
+            { (int)ServerPackets.playerStartWallrun, ClientHandle.PlayerStartWallRunInfection },
+            { (int)ServerPackets.playerContinueWallrun, ClientHandle.PlayerContinueWallRunInfection },
+            { (int)ServerPackets.playerStopWallrun, ClientHandle.PlayerStopWallRunInfection },
+            { (int)ServerPackets.updatePlayerKillStats, ClientHandle.UpdatePlayerKillStatsInfection },
+            { (int)ServerPackets.updatePlayerDeathStats, ClientHandle.UpdatePlayerDeathStatsInfection },
+            { (int)ServerPackets.playerStartCrouch, ClientHandle.PlayerStartCrouchInfection },
+            { (int)ServerPackets.playerStopCrouch, ClientHandle.PlayerStopCrouchInfection },
+            { (int)ServerPackets.createBuilding, ClientHandle.CreateNewBulding },
+            { (int)ServerPackets.createNewPlanet, ClientHandle.CreateNewSun },
+        };
+        Debug.Log("Initialized Client Infection Packets.");
     }
 
     private void Disconnect()

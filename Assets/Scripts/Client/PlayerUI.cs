@@ -36,7 +36,6 @@ public class PlayerUI : MonoBehaviour
     }
     public ScoreBoardRow[] scoreBoardRows;
 
-
     // Grapple =============================
     public void SetMaxGrapple(float maxValue)
     {

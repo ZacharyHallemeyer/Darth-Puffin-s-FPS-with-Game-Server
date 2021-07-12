@@ -129,6 +129,7 @@ public class EnvironmentGeneratorServerSide : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
+        ServerSend.EnvironmentReadyFreeForAll();
     }
 
     /// <summary>

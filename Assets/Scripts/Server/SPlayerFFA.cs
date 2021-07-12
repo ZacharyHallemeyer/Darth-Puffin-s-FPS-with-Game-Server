@@ -1,22 +1,16 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerFFA : MonoBehaviour
+public class SPlayerFFA : MonoBehaviour
 {
     #region Variables
-    // Generic variables
+
     public int id;
     public string username;
-    public float health;
-    public float maxHealth = 100;
     public Rigidbody rb;
     public Transform orientation;
-
-    // Stats
-    public int currentKills = 0;
-    public int currentDeaths = 0;
+    public SPlayer player;
 
     // Input
     private Vector2 moveDirection;
@@ -32,10 +26,9 @@ public class PlayerFFA : MonoBehaviour
 
     // Gravity variables (Disable use gravity for rigid body)
     public LayerMask whatIsGravityObject;
-    public float gravityMaxDistance = 500;
-    public float gravityForce = 4500;
+    public float gravityMaxDistance = 50;
+    public float gravityForce = 100;
     public float maxDistanceFromOrigin = 600, forceBackToOrigin = 4500f;
-    public Quaternion lastOrientationRotation;
 
     // JetPack 
     public float jetPackForce = 20;
@@ -45,7 +38,7 @@ public class PlayerFFA : MonoBehaviour
     public float jetPackBurstCost = .5f;
     public float jetPackRecoveryIncrementor = .1f;
 
-    // Grappling Variables ==================
+    // Grappling Variables 
     // Components
     private SpringJoint joint;
     public LayerMask whatIsGrapple;
@@ -63,7 +56,6 @@ public class PlayerFFA : MonoBehaviour
     public int magnetizeForce = 100;
 
     // Gun Variables
-
     public class GunInformation
     {
         public string name;
@@ -103,31 +95,17 @@ public class PlayerFFA : MonoBehaviour
 
     #endregion
 
-    private void Start()
-    {
-        maxDistanceFromOrigin = EnvironmentGeneratorServerSide.BoundaryDistanceFromOrigin;
-        currentJetPackPower = maxJetPackPower;
-        timeLeftToGrapple = maxGrappleTime;
-        grappleTimeLimiter = maxGrappleTime / 4;
-    }
+    #region Set up
 
-    /// <summary>
-    /// Inits new player info
-    /// </summary>
-    /// <param name="_id"> Client id </param>
-    /// <param name="_username"> Client username </param>
-    public void Initialize(int _id, string _username)
+    public void Initialize(int _id, string _username, SPlayer _player)
     {
         id = _id;
         username = _username;
-        health = maxHealth;
+        player = _player;
 
         SetGunInformation();
     }
 
-    /// <summary>
-    /// Sets gun information and stats for each possible weapon
-    /// </summary>
     public void SetGunInformation()
     {
         allGunInformation["Pistol"] = new GunInformation
@@ -214,10 +192,20 @@ public class PlayerFFA : MonoBehaviour
     }
 
 
-    /// <summary>Processes player input and moves the player.</summary>
-    public void FixedUpdate()
+    private void Start()
     {
-        if (health <= 0) return;
+        maxDistanceFromOrigin = EnvironmentGeneratorServerSide.BoundaryDistanceFromOrigin;
+        currentJetPackPower = maxJetPackPower;
+        timeLeftToGrapple = maxGrappleTime;
+        grappleTimeLimiter = maxGrappleTime / 4;
+    }
+
+    #endregion
+
+    #region Update and Input
+
+    private void FixedUpdate()
+    {
         GravityController();
 
         if (isGrounded)
@@ -252,12 +240,11 @@ public class PlayerFFA : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.CompareTag("GravityObject"))
+        if (collision.collider.CompareTag("GravityObject"))
         {
             rb.velocity /= 2;
         }
     }
-
 
     /// <summary>Updates the player input with newly received input.</summary>
     /// <param name="_inputs">The new key inputs.</param>
@@ -277,6 +264,7 @@ public class PlayerFFA : MonoBehaviour
     {
         isAnimInProgress = _isAnimInProgress;
     }
+    #endregion
 
     #region Movement
 
@@ -317,59 +305,13 @@ public class PlayerFFA : MonoBehaviour
     /// <param name="_direction"> direction to add force </param>
     public void JetPackMovement(Vector3 _direction)
     {
-        if(isGrounded)
+        if (isGrounded)
             rb.AddForce(_direction * jetPackForce * 5 * Time.deltaTime, ForceMode.Impulse);
         //ServerSend.PlayerContinueJetPack(id, currentJetPackTime);
-        else 
+        else
             rb.AddForce(_direction * jetPackForce * Time.deltaTime, ForceMode.Impulse);
         SendPlayerData();
     }
-    #endregion
-
-    #region Magnetize 
-    
-    /// <summary>
-    /// Adds force to player to have player go to the nearest gravity relative to player
-    /// </summary>
-    public void PlayerMagnetize()
-    {
-        rb.velocity = Vector3.zero;
-        Vector3 _desiredPosition = FindNearestGravityObjectPosition();
-
-        rb.AddForce((_desiredPosition - transform.position) * magnetizeForce * Time.deltaTime, ForceMode.Impulse);
-    }
-
-    /// <summary>
-    /// Finds the nearest gravity object position
-    /// </summary>
-    /// <returns> a vector3 of the position of the nearest gravity object </returns>
-    public Vector3 FindNearestGravityObjectPosition()
-    {
-        float _checkingDistance = 100, _errorCatcher = 0;
-        Collider[] _gravityObjectColiiders;
-        do
-        {
-            _gravityObjectColiiders = Physics.OverlapSphere(transform.position, _checkingDistance, whatIsGravityObject);
-            _checkingDistance += 500;
-            _errorCatcher++;
-            if (_errorCatcher > 10)
-                return Vector3.zero; // Return to sender (Origin) (This prevents infinite loop )
-        } while (_gravityObjectColiiders.Length == 0);
-
-        Transform _nearestGravityObject = _gravityObjectColiiders[0].transform;
-        float _lastDistance = 100000;   // garbage value
-        // Find closest gravity object
-        foreach (Collider _gravityObject in _gravityObjectColiiders)
-        {
-            if (Vector3.Distance(_gravityObject.transform.position, transform.position) < _lastDistance)
-            {
-                _lastDistance = Vector3.Distance(_gravityObject.transform.position, transform.position);
-                _nearestGravityObject = _gravityObject.transform;
-            }
-        }
-        return _nearestGravityObject.transform.position;
-    }
-
     #endregion
 
     #region Artificial Gravity
@@ -428,7 +370,7 @@ public class PlayerFFA : MonoBehaviour
     {
         rb.AddForce((_gravityObject.position - transform.position) * gravityForce * Time.deltaTime);
 
-        if (isGrounded )
+        if (isGrounded)
         {
             // Rotate Player to stand straight on gravity object
             Quaternion desiredRotation = Quaternion.FromToRotation(_gravityObject.up, -(_gravityObject.position - transform.position).normalized);
@@ -437,7 +379,52 @@ public class PlayerFFA : MonoBehaviour
             // Add extra force to stick player to planet surface
             rb.AddForce((_gravityObject.position - transform.position) * gravityForce * 1 * Time.deltaTime);
         }
-        lastOrientationRotation = orientation.localRotation;
+    }
+
+    #endregion
+
+    #region Magnetize 
+
+    /// <summary>
+    /// Adds force to player to have player go to the nearest gravity relative to player
+    /// </summary>
+    public void PlayerMagnetize()
+    {
+        rb.velocity = Vector3.zero;
+        Vector3 _desiredPosition = FindNearestGravityObjectPosition();
+
+        rb.AddForce((_desiredPosition - transform.position) * magnetizeForce * Time.deltaTime, ForceMode.Impulse);
+    }
+
+    /// <summary>
+    /// Finds the nearest gravity object position
+    /// </summary>
+    /// <returns> a vector3 of the position of the nearest gravity object </returns>
+    public Vector3 FindNearestGravityObjectPosition()
+    {
+        float _checkingDistance = 100, _errorCatcher = 0;
+        Collider[] _gravityObjectColiiders;
+        do
+        {
+            _gravityObjectColiiders = Physics.OverlapSphere(transform.position, _checkingDistance, whatIsGravityObject);
+            _checkingDistance += 500;
+            _errorCatcher++;
+            if (_errorCatcher > 10)
+                return Vector3.zero; // Return to sender (Origin) (This prevents infinite loop )
+        } while (_gravityObjectColiiders.Length == 0);
+
+        Transform _nearestGravityObject = _gravityObjectColiiders[0].transform;
+        float _lastDistance = 100000;   // garbage value
+        // Find closest gravity object
+        foreach (Collider _gravityObject in _gravityObjectColiiders)
+        {
+            if (Vector3.Distance(_gravityObject.transform.position, transform.position) < _lastDistance)
+            {
+                _lastDistance = Vector3.Distance(_gravityObject.transform.position, transform.position);
+                _nearestGravityObject = _gravityObject.transform;
+            }
+        }
+        return _nearestGravityObject.transform.position;
     }
 
     #endregion
@@ -451,13 +438,12 @@ public class PlayerFFA : MonoBehaviour
     /// <param name="_fireDirection"> player's current fire direction </param>
     public void ShootController(Vector3 _firePoint, Vector3 _fireDirection)
     {
-        if (health <= 0) return;
         if (isAnimInProgress) return;
 
         firePoint = _firePoint;
         fireDirection = _fireDirection;
 
-        if(!isShooting)
+        if (!isShooting)
         {
             if (currentGun.isAutomatic)
                 StartAutomaticFire();
@@ -511,7 +497,7 @@ public class PlayerFFA : MonoBehaviour
             {
                 ServerSend.PlayerShotLanded(id, _hit.point);
                 if (_hit.collider.CompareTag("Player"))
-                    _hit.collider.GetComponent<PlayerFFA>().TakeDamage(id, currentGun.damage);
+                    _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
             }
         }
         else     // Shotgun
@@ -527,7 +513,7 @@ public class PlayerFFA : MonoBehaviour
                 {
                     ServerSend.PlayerShotLanded(id, _hit.point);
                     if (_hit.collider.CompareTag("Player"))
-                        _hit.collider.GetComponent<PlayerFFA>().TakeDamage(id, currentGun.damage);
+                        _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
                 }
             }
         }
@@ -574,7 +560,7 @@ public class PlayerFFA : MonoBehaviour
         {
             ServerSend.PlayerShotLanded(id, _hit.point);
             if (_hit.collider.CompareTag("Player"))
-                _hit.collider.GetComponent<PlayerFFA>().TakeDamage(id, currentGun.damage);
+                _hit.collider.GetComponent<SPlayer>().TakeDamage(id, currentGun.damage);
         }
     }
 
@@ -632,7 +618,7 @@ public class PlayerFFA : MonoBehaviour
 
         ServerSend.PlayerSwitchWeapon(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
         // Send to all clients this player has switched it weapon
-        foreach(ClientServerSide _client in Server.clients.Values)
+        foreach (ClientServerSide _client in Server.clients.Values)
         {
             if (_client.player != null)
             {
@@ -698,7 +684,7 @@ public class PlayerFFA : MonoBehaviour
         ServerSend.PlayerContinueGrapple(id, timeLeftToGrapple);
         if (timeLeftToGrapple < 0)
             StopGrapple();
-    
+
         // Pull player to grapple point
         Vector3 direction = (GrapplePoint - transform.position).normalized;
         rb.AddForce(direction * 50 * Time.deltaTime, ForceMode.Impulse);
@@ -743,56 +729,12 @@ public class PlayerFFA : MonoBehaviour
 
     #endregion
 
-    #region Stats and Generic
-
-    /// <summary>
-    /// Take damage and update health and update stats
-    /// </summary>
-    /// <param name="_fromId"> Client that called this function </param>
-    /// <param name="_damage"> Value to subtract from health </param>
-    public void TakeDamage(int _fromId, float _damage)
-    {
-        if (health <= 0)
-            return;
-
-        health -= _damage;
-
-        if (health <= 0)
-        {
-            health = 0;
-            currentDeaths++;
-            ServerSend.UpdatePlayerDeathStats(id, currentDeaths);
-            Server.clients[_fromId].player.currentKills++;
-            ServerSend.UpdatePlayerKillStats(_fromId, Server.clients[_fromId].player.currentKills);
-            // Teleport to random spawnpoint
-            transform.position = EnvironmentGeneratorServerSide.spawnPoints[
-                                 Random.Range(0, EnvironmentGeneratorServerSide.spawnPoints.Count)];
-            ServerSend.PlayerPosition(this);
-            StartCoroutine(Respawn());
-        }
-
-        ServerSend.PlayerHealth(this);
-    }
-
-    /// <summary>
-    /// Respawns player after 5 seconds
-    /// </summary>
-    private IEnumerator Respawn()
-    {
-        yield return new WaitForSeconds(5f);
-
-        health = maxHealth;
-        ServerSend.PlayerRespawned(this);
-    }
-
-    #endregion
-
     /// <summary>
     /// Sends player position and rotation to all cleints
     /// </summary>
     public void SendPlayerData()
     {
-        ServerSend.PlayerPosition(this);
-        ServerSend.PlayerRotation(this, orientation.localRotation);
+        ServerSend.PlayerPosition(player);
+        ServerSend.PlayerRotation(player, orientation.localRotation);
     }
 }

@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerCamController : MonoBehaviour
 {
+    // TODO Change these to not be static
+    public static bool isOnWall, isWallLeft, isWallRight;
+    public float wallRunCameraTilt, maxWallRunCameraTilt = 10;
+
+
     public Transform playerRotation;
     public Transform orientation;
     public Camera playerCam;
@@ -85,8 +90,23 @@ public class PlayerCamController : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -89f, 89f);
 
         // Perform the rotations
-        transform.localRotation = Quaternion.Euler(xRotation, desiredX, 0);
+        transform.localRotation = Quaternion.Euler(xRotation, desiredX, wallRunCameraTilt);
         orientation.localRotation = Quaternion.Euler(0, desiredX, 0);
+
+
+        // Tilts camera in .5 second
+        // Prevents camera from spinning on the y-axis at a very fast angular velocity
+        // maxWallRunCameraTilt - wallRunCameraTilt < -.1f, wallRunCameraTilt < maxWallRunCameraTilt
+        if (wallRunCameraTilt < maxWallRunCameraTilt && isOnWall && isWallRight)
+            wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 2;
+        if (wallRunCameraTilt > -maxWallRunCameraTilt && isOnWall && isWallLeft)
+            wallRunCameraTilt -= Time.deltaTime * maxWallRunCameraTilt * 2;
+
+        // Tilts camera back again
+        if (wallRunCameraTilt > .2f && !isWallRight && !isWallLeft)
+            wallRunCameraTilt -= Time.deltaTime * maxWallRunCameraTilt * 2;
+        else if (wallRunCameraTilt < -.2f && !isWallRight && !isWallLeft)
+            wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 2;
     }
 
     /// <summary>

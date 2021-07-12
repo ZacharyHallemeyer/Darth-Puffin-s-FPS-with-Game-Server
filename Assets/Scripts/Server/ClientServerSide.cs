@@ -11,11 +11,12 @@ public class ClientServerSide
 
     public int id;
     public string userName;
-    public PlayerFFA player;
+    public SPlayer player;
+    public SPlayerFFA sPlayerFFA;
+    public SPlayerInfection sPlayerInfection;
     public TCP tcp;
     public UDP udp;
 
-    //public static Dictionary<int, string> allClients = new Dictionary<int, string>();
     public static Dictionary<int, ClientServerSide> allClients = new Dictionary<int, ClientServerSide>();
 
     public ClientServerSide(int _clientId)
@@ -231,8 +232,10 @@ public class ClientServerSide
         //player = InstantiateTools.instance.InstantiatePlayer();
         player = NetworkManager.instance.InstantiatePlayerFFA();
         player.Initialize(id, userName);
+        sPlayerFFA = player.sPlayerFFA;
+        sPlayerFFA.Initialize(id, userName, player);
         Server.clients[id].player = player;
-
+        Server.clients[id].sPlayerFFA = sPlayerFFA;
 
         // Send all players to the new player
         foreach (ClientServerSide _client in Server.clients.Values)
@@ -241,7 +244,7 @@ public class ClientServerSide
             {
                 if (_client.id != id)
                 {
-                    ServerSend.SpawnPlayer(id, _client.player, _client.player.currentGun.name);
+                    ServerSend.SpawnPlayerFFA(id, _client.player, _client.sPlayerFFA);
                     ServerSend.UpdatePlayerKillStats(_client.id, _client.player.currentKills);
                     ServerSend.UpdatePlayerDeathStats(_client.id, _client.player.currentDeaths);
                 }
@@ -253,7 +256,7 @@ public class ClientServerSide
         {
             if (_client.player != null)
             {
-                ServerSend.SpawnPlayer(_client.id, player, player.currentGun.name);
+                ServerSend.SpawnPlayerFFA(_client.id, player, _client.sPlayerFFA);
             }
         }
 
@@ -269,6 +272,53 @@ public class ClientServerSide
         }
 
         ServerSend.CreateBoundary(id, Vector3.zero, EnvironmentGeneratorServerSide.BoundaryDistanceFromOrigin);
+    }
+
+    /// <summary>Sends the client into the game and informs other clients of the new player.</summary>
+    /// <param name="_playerName">The username of the new player.</param>
+    public void SendIntoGameInfection()
+    {
+        //player = InstantiateTools.instance.InstantiatePlayer();
+        player = NetworkManager.instance.InstantiatePlayerInfection();
+        player.Initialize(id, userName);
+        sPlayerInfection = player.sPlayerInfection;
+        sPlayerInfection.Initialize(id, userName, player);
+        Server.clients[id].player = player;
+        Server.clients[id].sPlayerInfection = sPlayerInfection;
+
+        // Send all players to the new player
+        foreach (ClientServerSide _client in Server.clients.Values)
+        {
+            if (_client.player != null)
+            {
+                if (_client.id != id)
+                {
+                    ServerSend.SpawnPlayerInfection(id, _client.player, _client.sPlayerInfection);
+                    ServerSend.UpdatePlayerKillStats(_client.id, _client.player.currentKills);
+                    ServerSend.UpdatePlayerDeathStats(_client.id, _client.player.currentDeaths);
+                }
+            }
+        }
+
+        // Send the new player to all players (including himself)
+        foreach (ClientServerSide _client in Server.clients.Values)
+        {
+            if (_client.player != null)
+            {
+                ServerSend.SpawnPlayerInfection(_client.id, player, sPlayerInfection);
+            }
+        }
+
+        // Send environment to new player
+        foreach (int _key in InfectionEnvironmentGenerator.buildings.Keys)
+        {
+            GameObject _building = InfectionEnvironmentGenerator.buildings[_key];
+            ServerSend.CreateBuildingInfection(id, _building.transform.position, _building.transform.localScale, _key);
+        }
+        foreach (GameObject _sun in InfectionEnvironmentGenerator.suns.Values)
+        {
+            ServerSend.CreateSunsInfection(id, _sun.transform.position, _sun.transform.localScale);
+        }
     }
 
     /// <summary>Disconnects the client and stops all network traffic.</summary>

@@ -34,8 +34,15 @@ public class ClientHandle : MonoBehaviour
         ClientClientSide.instance.lobby.InitLobbyUI();   
     }
 
+    #region Player Free For All
+
+    public static void EnvironmentReadyFreeForAll(PacketClientSide _packet)
+    {
+        ClientClientSide.instance.lobby.ToggleStartButtonState();
+    }
+
     /// <summary>
-    /// Spawn player
+    /// Spawn Free for all player
     /// </summary>
     /// <param name="_packet"> id, username, position, rotation, gunName, currentAmmo, 
     /// reserveAmmo, maxGrappleTime,  maxJetPackTime </param>
@@ -102,6 +109,7 @@ public class ClientHandle : MonoBehaviour
         {
             Destroy(_playerManager.gameObject);
             GameManager.players.Remove(_id);
+            GameManager.playersActions.Remove(_id);
         }
         foreach(PlayerManager _player in GameManager.players.Values)
         {
@@ -182,8 +190,6 @@ public class ClientHandle : MonoBehaviour
 
         GameManager.instance.CreateBoundaryVisual(_position, _radius);
     }
-
-    #region Player Actions
 
     /// <summary>
     /// Recieve player started grapple from server and play animation
@@ -343,8 +349,6 @@ public class ClientHandle : MonoBehaviour
         GameManager.playersActions[_fromId].PlayerShotLanded(_hitPoint);
     }
 
-    #endregion
-
     /// <summary>
     /// Recieve player continue Jet Pack from server and play animation
     /// </summary>
@@ -354,11 +358,11 @@ public class ClientHandle : MonoBehaviour
         int _fromId = _packet.ReadInt();
         float _jetPackTime = _packet.ReadFloat();
 
-        GameManager.playersMovement[_fromId].PlayerContinueJetPack(_jetPackTime);
+        GameManager.playersActions[_fromId].PlayerContinueJetPack(_jetPackTime);
     }
 
-
     #region Player Stats
+
     /// <summary>
     /// Recieve player kills stats and update stats
     /// </summary>
@@ -382,5 +386,291 @@ public class ClientHandle : MonoBehaviour
 
         GameManager.players[_id].currentDeaths = _currentDeaths;
     }
+
+    #endregion
+
+
+    #endregion
+
+    #region Player Infection
+
+    public static void EnvironmentReadyInfection(PacketClientSide _packet)
+    {
+        Debug.Log("Environment ready is now calling toggle");
+        ClientClientSide.instance.lobby.ToggleStartButtonState();
+    }
+
+    /// <summary>
+    /// Recieve planet info from server and create new planet
+    /// </summary>
+    /// <param name="_packet">position, localScale, gravityField (float) </param>
+    public static void CreateNewSun(PacketClientSide _packet)
+    {
+        Vector3 _position = _packet.ReadVector3();
+        Vector3 _localScale = _packet.ReadVector3();
+
+        CInfectionGameManager.instance.SpawnSun(_position, _localScale);
+    }
+
+    /// <summary>
+    /// Recieve planet info from server and create new planet
+    /// </summary>
+    /// <param name="_packet">position, localScale, gravityField (float) </param>
+    public static void CreateNewBulding(PacketClientSide _packet)
+    {
+        Vector3 _position = _packet.ReadVector3();
+        Vector3 _localScale = _packet.ReadVector3();
+        int _key = _packet.ReadInt();
+
+        CInfectionGameManager.instance.SpawnBuilding(_position, _localScale, _key);
+    }
+
+    /// <summary>
+    /// Spawn player
+    /// </summary>
+    /// <param name="_packet"> id, username, position, rotation, gunName, currentAmmo, 
+    /// reserveAmmo, maxGrappleTime,  maxJetPackTime </param>
+    public static void SpawnPlayerInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        string _username = _packet.ReadString();
+        Vector3 _position = _packet.ReadVector3();
+        Quaternion _rotation = _packet.ReadQuaternion();
+        string _gunName = _packet.ReadString();
+        int _currentAmmo = _packet.ReadInt();
+        int _reserveAmmo = _packet.ReadInt();
+
+        // Turn off lobby UI if it has not already
+        if (ClientClientSide.instance.lobby.lobbyParent.activeInHierarchy)
+            ClientClientSide.instance.lobby.lobbyParent.SetActive(false);
+        CInfectionGameManager.instance.SpawnPlayer(_id, _username, _position, _rotation, _gunName, _currentAmmo,
+                                                   _reserveAmmo);
+    }
+
+    /// <summary>
+    /// Updates player position 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerPositionInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        Vector3 _position = _packet.ReadVector3();
+        
+        if(CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
+        {
+            _player.transform.position = _position;
+        }
+    }
+
+    /// <summary>
+    /// Updates player rotation
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerRotationInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        Quaternion _rotation = _packet.ReadQuaternion();
+
+        if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
+        {
+            _player.transform.localRotation = _rotation; 
+        }
+    }
+
+    /// <summary>
+    /// Updates player rotation
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerStartCrouchInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        Vector3 _localScale = _packet.ReadVector3();
+
+        if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
+        {
+            _player.transform.localScale = _localScale;
+            CInfectionGameManager.playersActionsInfection[_id].StartCrouch(_localScale);
+        }
+    }
+
+    /// <summary>
+    /// Updates player rotation
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerStopCrouchInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        Vector3 _localScale= _packet.ReadVector3();
+
+        if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
+        {
+            _player.transform.localScale = _localScale;
+            CInfectionGameManager.playersActionsInfection[_id].StopCrouch(_localScale);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerDisconnectedInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+
+        ClientClientSide.allClients.Remove(_id);
+        ClientClientSide.instance.lobby.InitLobbyUI();
+        if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _playerManager))
+        {
+            Destroy(_playerManager.gameObject);
+            CInfectionGameManager.players.Remove(_id);
+            CInfectionGameManager.playersActionsInfection.Remove(_id);
+        }
+        foreach (PlayerManager _player in GameManager.players.Values)
+        {
+            _player.playerUI.InitScoreBoard();
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerHealthInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        int _health = _packet.ReadInt();
+
+        CInfectionGameManager.players[_id].SetHealth(_health);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerRespawnedInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+
+        CInfectionGameManager.players[_id].Respawn();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void OtherPlayerSwitchedWeaponInfection(PacketClientSide _packet)
+    {
+        int _fromId = _packet.ReadInt();
+        int _toId = _packet.ReadInt();
+        string _gunName = _packet.ReadString();
+
+        CInfectionGameManager.playersActionsInfection[_toId].ShowOtherPlayerActiveWeapon(_fromId, _gunName);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerShootInfection(PacketClientSide _packet)
+    {
+        int _fromId = _packet.ReadInt();
+        int _currentAmmo = _packet.ReadInt();
+        int _reserveAmmo = _packet.ReadInt();
+        CInfectionGameManager.playersActionsInfection[_fromId].PlayerStartSingleFireAnim(_currentAmmo, _reserveAmmo);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerReloadInfection(PacketClientSide _packet)
+    {
+        int _fromId = _packet.ReadInt();
+        int _currentAmmo = _packet.ReadInt();
+        int _reserveAmmo = _packet.ReadInt();
+        CInfectionGameManager.playersActionsInfection[_fromId].PlayerStartReloadAnim(_currentAmmo, _reserveAmmo);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerSwitchWeaponInfection(PacketClientSide _packet)
+    {
+        int _fromId = _packet.ReadInt();
+        int _currentAmmo = _packet.ReadInt();
+        int _reserveAmmo = _packet.ReadInt();
+        string _newGunName = _packet.ReadString();
+
+        CInfectionGameManager.playersActionsInfection[_fromId].PlayerStartSwitchWeaponAnim(_newGunName, _currentAmmo, _reserveAmmo);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerShotLandedInfection(PacketClientSide _packet)
+    {
+        int _fromId = _packet.ReadInt();
+        Vector3 _hitPoint = _packet.ReadVector3();
+
+        CInfectionGameManager.playersActionsInfection[_fromId].PlayerShotLanded(_hitPoint);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerStartWallRunInfection(PacketClientSide _packet)
+    {
+        PlayerCamController.isWallLeft = _packet.ReadBool();
+        PlayerCamController.isWallRight = _packet.ReadBool();
+        PlayerCamController.isOnWall = true;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerContinueWallRunInfection(PacketClientSide _packet)
+    {
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerStopWallRunInfection(PacketClientSide _packet)
+    {
+        PlayerCamController.isWallLeft = false;
+        PlayerCamController.isWallRight = false;
+        PlayerCamController.isOnWall = true;
+    }
+
+    /// <summary>
+    /// Recieve player kills stats and update stats
+    /// </summary>
+    /// <param name="_packet">id, current kills/<param>
+    public static void UpdatePlayerKillStatsInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        int _currentKills = _packet.ReadInt();
+
+        CInfectionGameManager.players[_id].currentKills = _currentKills;
+    }
+
+    /// <summary>
+    /// Recieve player death stats and update stats
+    /// </summary>
+    /// <param name="_packet">id, current deaths/<param>
+    public static void UpdatePlayerDeathStatsInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        int _currentDeaths = _packet.ReadInt();
+
+        CInfectionGameManager.players[_id].currentDeaths = _currentDeaths;
+    }
+
     #endregion
 }

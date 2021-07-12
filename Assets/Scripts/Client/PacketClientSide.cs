@@ -19,7 +19,9 @@ public enum ServerPackets
     playerRespawned,
     createNewPlanet,
     createNewNonGravityObject,
+    createBuilding,
     createBoundary,
+    environmentReady,
     playerStartGrapple,
     playerContinueGrapple,
     otherPlayerContinueGrapple,
@@ -34,8 +36,13 @@ public enum ServerPackets
     playerSwitchWeapon,
     playerShotLanded,
     playerContinueJetPack,
+    playerStartWallrun,
+    playerContinueWallrun,
+    playerStopWallrun,
     updatePlayerKillStats,
     updatePlayerDeathStats,
+    playerStartCrouch,
+    playerStopCrouch,
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -56,6 +63,8 @@ public enum ClientPackets
     playerReload,
     playerSwitchWeapon,
     playerMagnetize,
+    playerJump,
+    playerCrouch,
 }
 
 public class PacketClientSide : IDisposable

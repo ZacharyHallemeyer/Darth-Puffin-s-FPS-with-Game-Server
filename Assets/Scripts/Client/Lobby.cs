@@ -16,7 +16,14 @@ public class Lobby : MonoBehaviour
 
     public GameObject lobbyParent;
     public GameObject lobbyRowPrefab;
-    public LobbyRow[] lobbyRows; 
+    public LobbyRow[] lobbyRows;
+
+    public Button startButton;
+
+    private void Awake()
+    {
+        startButton.enabled = false;
+    }
 
     /// <summary>
     /// Adds a row of client info for each client
@@ -67,5 +74,10 @@ public class Lobby : MonoBehaviour
         }
         SceneManager.LoadSceneAsync("ClientMainMenu");
         //SceneManager.UnloadSceneAsync("");
+    }
+
+    public void ToggleStartButtonState()
+    {
+        startButton.enabled = true;
     }
 }

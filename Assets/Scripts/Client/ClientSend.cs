@@ -26,7 +26,6 @@ public class ClientSend : MonoBehaviour
     /// </summary>
     public static void WelcomeReceived()
     {
-        Debug.Log("Send welcome recieved called");
         using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.welcomeReceived))
         {
             _packet.Write(ClientClientSide.instance.myId);
@@ -34,7 +33,6 @@ public class ClientSend : MonoBehaviour
 
             SendTCPData(_packet);
         }
-        Debug.Log("Send welcome recieved completed");
     }
 
     /// <summary>
@@ -51,6 +49,7 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    #region Player Free For All
     /// <summary>
     /// Tell server to start spawning environment
     /// </summary>
@@ -220,6 +219,110 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }
     }
+    #endregion
+
+    #region Player Infection
+
+    /// <summary>
+    /// Tell server to start spawning environment
+    /// </summary>
+    public static void StartGenerateEnvironmentInfection()
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.startGenerateEnvironment))
+        {
+            _packet.Write(1);
+
+            SendTCPData(_packet);
+        }
+    }
+
+    /// <summary>Sends player input to the server.</summary>
+    /// <param name="_inputs"></param>
+    public static void PlayerMovementInfection(Vector2 _moveDirection)
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerMovement))
+        {
+            _packet.Write(_moveDirection);
+            // Orientation needs to be the first child of player
+            _packet.Write(CInfectionGameManager.players[ClientClientSide.instance.myId]
+                          .transform.GetChild(0).transform.localRotation);
+
+            SendUDPData(_packet);
+        }
+    }
+
+    /// <summary>Tells server player wants to jump.</summary>
+    /// <param name="_inputs"></param>
+    public static void PlayerJumpInfection()
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerJump))
+        {
+            SendUDPData(_packet);
+        }
+    }
+
+    /// <summary>Tells server that player wants to toggle crouch.</summary>
+    /// <param name="_inputs"></param>
+    public static void PlayerCrouchInfection()
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerCrouch))
+        {
+            SendUDPData(_packet);
+        }
+    }
+
+
+    /// <summary>Sends player input to the server.</summary>
+    /// <param name="_inputs"></param>
+    public static void PlayerActionsInfection(bool _isAnimInProgress)
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerActions))
+        {
+            _packet.Write(_isAnimInProgress);
+
+            SendUDPData(_packet);
+        }
+    }
+
+    /// <summary>
+    /// Send server info for player to start shooting
+    /// </summary>
+    /// <param name="_firePoint"> player's fire point </param>
+    /// <param name="_fireDirection"> player's fire direction </param>
+    public static void PlayerShootInfection(Vector3 _firePoint, Vector3 _fireDirection)
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerStartShoot))
+        {
+            _packet.Write(_firePoint);
+            _packet.Write(_fireDirection);
+
+            SendTCPData(_packet);
+        }
+    }
+
+    /// <summary>
+    /// Send server info for player to reload
+    /// </summary>
+    public static void PlayerReloadInfection()
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerReload))
+        {
+            SendTCPData(_packet);
+        }
+    }
+
+    /// <summary>
+    /// Send server info for player to switch weapon
+    /// </summary>
+    public static void PlayerSwitchWeaponInfection()
+    {
+        using (PacketClientSide _packet = new PacketClientSide((int)ClientPackets.playerSwitchWeapon))
+        {
+            SendTCPData(_packet);
+        }
+    }
+
+    #endregion
 
     #endregion
 }
