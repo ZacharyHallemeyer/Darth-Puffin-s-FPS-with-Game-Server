@@ -477,6 +477,21 @@ public class ClientHandle : MonoBehaviour
     }
 
     /// <summary>
+    /// Updates player position 
+    /// </summary>
+    /// <param name="_packet"></param>
+    public static void PlayerLocalPlayerInfection(PacketClientSide _packet)
+    {
+        int _id = _packet.ReadInt();
+        Vector3 _localScale = _packet.ReadVector3();
+        
+        if(CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
+        {
+            _player.transform.localScale = _localScale;
+        }
+    }
+
+    /// <summary>
     /// Updates player rotation
     /// </summary>
     /// <param name="_packet"></param>
@@ -488,7 +503,7 @@ public class ClientHandle : MonoBehaviour
         if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
         {
             _player.transform.localScale = _localScale;
-            CInfectionGameManager.playersActionsInfection[_id].StartCrouch(_localScale);
+            CInfectionGameManager.playersActionsInfection[_id].StartCrouch();
         }
     }
 
@@ -504,7 +519,7 @@ public class ClientHandle : MonoBehaviour
         if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
         {
             _player.transform.localScale = _localScale;
-            CInfectionGameManager.playersActionsInfection[_id].StopCrouch(_localScale);
+            CInfectionGameManager.playersActionsInfection[_id].StopCrouch();
         }
     }
 

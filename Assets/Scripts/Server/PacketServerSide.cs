@@ -4,62 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-/*
-/// <summary>Sent from server to client.</summary>
-public enum ServerPackets
-{
-    welcome = 1,
-    spawnPlayer,
-    playerPosition,
-    playerRotation,
-    playerDisconnected,
-    otherPlayerTakenDamage,
-    playerHealth,
-    playerRespawned,
-    createNewPlanet,
-    createNewNonGravityObject,
-    createBoundary,
-    playerStartGrapple,
-    playerContinueGrapple,
-    otherPlayerContinueGrapple,
-    otherPlayerStopGrapple,
-    playerStopGrapple,
-    otherPlayerSwitchedWeapon,
-    playerSinglefire,
-    playerStartAutomaticFire,
-    playerContinueAutomaticFire,
-    playerStopAutomaticFire,
-    playerReload,
-    playerSwitchWeapon,
-    playerShotLanded,
-    playerContinueJetPack,
-    updatePlayerKillStats,
-    updatePlayerDeathStats,
-}
-
-/// <summary>Sent from client to server.</summary>
-public enum ClientPackets
-{
-    welcomeReceived = 1,
-    hostChangeGameMode,
-    hostStartGame,
-    playerJoinLobby,
-    playerMovement,
-    playerJetPackMovement,
-    playerActions,
-    playerMagnetize,
-    playerStartGrapple,
-    playerContinueGrappling,
-    playerStopGrapple,
-    playerStartShoot,
-    playerUpdateShootDirection,
-    playerStopShoot,
-    playerReload,
-    playerSwitchWeapon,
-    playerThrowItem
-}
-*/
-
 public class PackerServerSide : IDisposable
 {
     private List<byte> buffer;

@@ -356,6 +356,7 @@ public class ClientClientSide : MonoBehaviour
             { (int)ServerPackets.environmentReady, ClientHandle.EnvironmentReadyInfection },
             { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayerInfection },
             { (int)ServerPackets.playerPosition, ClientHandle.PlayerPositionInfection },
+            { (int)ServerPackets.playerLocalScale, ClientHandle.PlayerLocalPlayerInfection },
             { (int)ServerPackets.playerRotation, ClientHandle.PlayerRotationInfection },
             { (int)ServerPackets.playerDisconnected, ClientHandle.PlayerDisconnectedInfection },
             { (int)ServerPackets.otherPlayerTakenDamage, ClientHandle.OtherPlayerTakenDamageInfection },

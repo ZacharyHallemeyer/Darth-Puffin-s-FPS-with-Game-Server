@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: 4d179d5b17d0fb74a8335162adbac7e1
   - enabled: 1
     path: Assets/Scenes/ClientFreeForAll.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    guid: 0983932f4cdf532439675eaf0ecd4edf
   - enabled: 1
     path: Assets/Scenes/ServerFreeForAll.unity
     guid: f12e094709fdd884f9f3ea33929f84f6

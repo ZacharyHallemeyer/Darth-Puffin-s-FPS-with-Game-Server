@@ -73,7 +73,7 @@ public class ServerHandle
     /// <param name="_packet"> NULL </param>
     public static void StartGenerateEnvironment(int _fromClient, PackerServerSide _packet)
     {
-        EnvironmentGeneratorServerSide.instance.StartCoroutine(EnvironmentGeneratorServerSide.instance.GenerateEnvironment());
+        FreeForAllEnvironmentGenerator.instance.StartCoroutine(FreeForAllEnvironmentGenerator.instance.GenerateEnvironment());
     }
 
     /// <summary>

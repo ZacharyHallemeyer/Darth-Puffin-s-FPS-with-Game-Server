@@ -32,7 +32,6 @@ public class SPlayerInfection : MonoBehaviour
     private Vector3 playerScale;
     public float slideForce = 400;
     public float slideCounterMovement = 0.2f;
-    public float crouchGunDegree = 50;
     public bool isCrouching;
 
     public bool isSliding = false;
@@ -257,7 +256,7 @@ public class SPlayerInfection : MonoBehaviour
         }
 
         // Slide as soon as player lands 
-        if (isGrounded && shouldSlide)
+        if (isGrounded && shouldSlide && !isOnWall)
         {
             Slide();
             return;
@@ -313,8 +312,10 @@ public class SPlayerInfection : MonoBehaviour
     public void CrouchController()
     {
         if (isCrouching)
+        {        
             StopCrouch();
-        else
+        }
+        else if(!isOnWall)
             StartCrouch();
     }
 
@@ -325,14 +326,31 @@ public class SPlayerInfection : MonoBehaviour
     {
         ServerSend.PlayerStartCrouchInfection(id, crouchScale);
         isCrouching = true;
-        transform.localScale = crouchScale;
-        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+        //transform.localScale = crouchScale;
+        //transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
         if (rb.velocity.magnitude > 0.5f)
             shouldSlide = true;
 
+        InvokeRepeating("StartCrouchHelper", 0f, .01f);
         // Prevents guns and other such objects from shrinking
         foreach (Transform child in gameObject.transform)
             child.localScale = playerScale;
+    }
+
+    private void StartCrouchHelper()
+    {
+        if(transform.localScale.y > crouchScale.y)
+        {
+            transform.localScale -= new Vector3(0, .05f, 0);
+            transform.position -= new Vector3(0, .05f, 0);
+            ServerSend.PlayerPositionInfection(player);
+            ServerSend.PlayerLocalScaleInfection(player);
+        }
+        else
+        {
+            transform.localScale = crouchScale;
+            CancelInvoke("StartCrouchHelper");
+        }
     }
 
     /// <summary>
@@ -348,6 +366,11 @@ public class SPlayerInfection : MonoBehaviour
         // Prevents guns and other such objects from expanding larger than intended
         foreach (Transform child in gameObject.transform)
             child.localScale = crouchScale;
+    }
+
+    public void StopCrouchHelper()
+    {
+
     }
 
     /// <summary>
@@ -447,7 +470,10 @@ public class SPlayerInfection : MonoBehaviour
             rb.useGravity = false;
         // prevents player to be crouched on wall
         if (isCrouching)
+        {
+            Debug.Log("Stop crouch called from wall run");
             StopCrouch();
+        }
 
         // get player off wall if they go over max time
         if (timeOnWall > maxtimeOnWall)
@@ -569,7 +595,7 @@ public class SPlayerInfection : MonoBehaviour
     private IEnumerator WallJumpHelper()
     {
         yield return new WaitForSeconds(.1f);
-        rb.AddForce(orientation.up * jumpForce);
+        rb.AddForce(orientation.up * jumpForce / 4);
     }
 
 

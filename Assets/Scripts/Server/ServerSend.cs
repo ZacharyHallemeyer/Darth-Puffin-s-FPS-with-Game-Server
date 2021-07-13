@@ -121,8 +121,8 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.username);
-            _packet.Write(EnvironmentGeneratorServerSide.
-                          spawnPoints[Random.Range(0, EnvironmentGeneratorServerSide.spawnPoints.Count)]);
+            _packet.Write(FreeForAllEnvironmentGenerator.
+                          spawnPoints[Random.Range(0, FreeForAllEnvironmentGenerator.spawnPoints.Count)]);
             _packet.Write(_player.transform.rotation);
             _packet.Write(_sPlayerFFA.currentGun.name);
             _packet.Write(_sPlayerFFA.currentGun.currentAmmo);
@@ -607,6 +607,22 @@ public class ServerSend
             SendTCPDataToAll(_player.id, _packet);
         }
     }
+
+    /// <summary>Sends a player's updated rotation to all clients including himself </summary>
+    /// <param name="_player">The player whose rotation to update.</param>
+    public static void PlayerLocalScaleInfection(SPlayer _player)
+    {
+        // Send player rotation and orientation to all clients
+        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerLocalScale))
+        {
+            _packet.Write(_player.id);
+            _packet.Write(_player.transform.localScale);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+
 
     /// <summary>Sends a player's updated crouch state to all clients </summary>
     /// <param name="_player">The player whose rotation to update.</param>

@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3535023998571506623}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.45, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7278839664658962558}
@@ -223,46 +223,10 @@ MonoBehaviour:
   username: 
   health: 0
   maxHealth: 100
-  rb: {fileID: 7171154087823344460}
-  orientation: {fileID: 1345018100387557002}
   sPlayerFFA: {fileID: 0}
   sPlayerInfection: {fileID: 1941726873142863108}
   currentKills: 0
   currentDeaths: 0
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 3584
-  isGrounded: 0
-  groundCheck: {fileID: 7974821428153464236}
-  groundDistance: 5
-  whatIsGravityObject:
-    serializedVersion: 2
-    m_Bits: 2048
-  gravityMaxDistance: 10
-  gravityForce: 100
-  maxDistanceFromOrigin: 600
-  forceBackToOrigin: 4500
-  lastOrientationRotation: {x: 0, y: 0, z: 0, w: 0}
-  jetPackForce: 20
-  isJetPackRecoveryActive: 0
-  maxJetPackPower: 2
-  currentJetPackPower: 0
-  jetPackBurstCost: 1
-  jetPackRecoveryIncrementor: 0.01
-  whatIsGrapple:
-    serializedVersion: 2
-    m_Bits: 7936
-  maxGrappleTime: 10
-  grappleRecoveryIncrement: 0.1
-  timeLeftToGrapple: 0
-  grappleTimeLimiter: 0
-  magnetizeForce: 100
-  gunNames: []
-  whatIsShootable:
-    serializedVersion: 2
-    m_Bits: 5888
-  isShooting: 0
-  isAnimInProgress: 0
 --- !u!114 &1941726873142863108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +244,8 @@ MonoBehaviour:
   rb: {fileID: 7171154087823344460}
   orientation: {fileID: 1345018100387557002}
   player: {fileID: 6120784216943288319}
+  health: 0
+  maxHealth: 100
   whatIsGround:
     serializedVersion: 2
     m_Bits: 1536
@@ -297,6 +263,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   wallCheck: {fileID: 8416195694734084996}
+  wallDistance: 1.5
   wallrunForce: 0
   maxWallRunCameraTilt: 10
   wallRunCameraTilt: 0

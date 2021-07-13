@@ -25,6 +25,9 @@ public class PlayerUI : MonoBehaviour
     public GameObject scoreBoardParent;
     public GameObject scoreBoardRowPrefab;
 
+    // Crouch UI
+    public Image crouchImage;
+
     public class ScoreBoardRow
     {
         public GameObject scoreBoardRow;
@@ -209,4 +212,54 @@ public class PlayerUI : MonoBehaviour
     }
 
     // End of Score Board ==================
+
+    // Crouch ==============================
+
+    public void ChangeToCrouch()
+    {
+        CancelInvoke("ChangeToStandAnim");
+        InvokeRepeating("ChangeToCrouchAnim", 0f, .01f);
+    }
+
+    /// <summary>
+    /// Compress square that represents player state. Must be called with Invoke repeating
+    /// </summary>
+    public void ChangeToCrouchAnim()
+    {
+        if (crouchImage.rectTransform.sizeDelta.y > 50)
+        {
+            crouchImage.rectTransform.anchoredPosition -= new Vector2(0f, 3f);
+            crouchImage.rectTransform.sizeDelta -= Vector2.up * 6;
+        }
+        else
+        {
+            crouchImage.rectTransform.sizeDelta = new Vector2(100, 50);
+            CancelInvoke("ChangeToCrouchAnim");
+        }
+    }
+
+    public void ChangeToStand()
+    {
+        CancelInvoke("ChangeToCrouchAnim");
+        InvokeRepeating("ChangeToStandAnim", 0f, .01f);
+    }
+
+    /// <summary>
+    /// Expands square that represents player state. Must be called with Invoke repeating
+    /// </summary>
+    public void ChangeToStandAnim()
+    {
+        if (crouchImage.rectTransform.sizeDelta.y < 100)
+        {
+            crouchImage.rectTransform.localPosition += new Vector3(0f, 3f, 0f);
+            crouchImage.rectTransform.sizeDelta += Vector2.up * 6;
+        }
+        else
+        {
+            crouchImage.rectTransform.sizeDelta = new Vector2(100, 100);
+            CancelInvoke("ChangeToStandAnim");
+        }
+    }
+
+    // End of Crouch =======================
 }

@@ -9,9 +9,11 @@ public class PlayerActionInfection : MonoBehaviour
     public Camera playerCam;
     public InputMaster inputMaster;
     public PlayerUI playerUI;
-    public Vector3 playerScale;
-    public Vector3 CrouchScale = Vector3.one;
 
+    // Crouch
+    private Vector3 playerScale = new Vector3(1, 1.5f, 1);
+    private Vector3 CrouchScale = Vector3.one;
+    public bool isCrouching = false;
 
     // Materials
     public Material basePlayerMaterial;
@@ -25,12 +27,6 @@ public class PlayerActionInfection : MonoBehaviour
     // Movement
     public Transform orientation;
     public LayerMask whatIsGravityObject;
-
-    // Grapple
-    public LineRenderer lineRenderer;
-    private Vector3 grapplePoint;
-    public bool isGrappling = false;
-    public bool releasedGrappleControlSinceLastGrapple = true;
 
     // Guns!
     public class GunInformation
@@ -134,8 +130,22 @@ public class PlayerActionInfection : MonoBehaviour
     {
         timeSinceLastShoot += Time.deltaTime;
 
-        if (inputMaster.Player.Crouch.triggered)
-            ClientSend.PlayerCrouchInfection();
+        if(!isCrouching)
+        {
+            if (inputMaster.Player.Crouch.ReadValue<float>() != 0)
+            {
+                isCrouching = true;
+                ClientSend.PlayerCrouchInfection();
+            }
+        }
+        else
+        {
+            if (inputMaster.Player.Crouch.ReadValue<float>() == 0)
+            {
+                isCrouching = false;
+                ClientSend.PlayerCrouchInfection();
+            }
+        }
         if (inputMaster.Player.Jump.triggered)
             ClientSend.PlayerJumpInfection();
 
@@ -173,18 +183,22 @@ public class PlayerActionInfection : MonoBehaviour
         ClientSend.PlayerActionsInfection(isAnimInProgress);
     }
 
-    public void StartCrouch(Vector3 _localScale)
+    public void StartCrouch()
     {
+        isCrouching = true;
         // Prevents guns and other such objects from expanding larger than intended
         foreach (Transform child in gameObject.transform)
-            child.localScale = new Vector3(1, 1.5f, 1f);
+            child.localScale = playerScale;
+        playerUI.ChangeToCrouch();
     }
 
-    public void StopCrouch(Vector3 _localScale)
+    public void StopCrouch()
     {
+        isCrouching = false;
         // Prevents guns and other such objects from expanding larger than intended
         foreach (Transform child in gameObject.transform)
-            child.localScale = Vector3.one;
+            child.localScale = CrouchScale;
+        playerUI.ChangeToStand();
     }
 
     #region Guns

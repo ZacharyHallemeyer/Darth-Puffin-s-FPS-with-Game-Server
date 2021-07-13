@@ -194,7 +194,7 @@ public class SPlayerFFA : MonoBehaviour
 
     private void Start()
     {
-        maxDistanceFromOrigin = EnvironmentGeneratorServerSide.BoundaryDistanceFromOrigin;
+        maxDistanceFromOrigin = FreeForAllEnvironmentGenerator.BoundaryDistanceFromOrigin;
         currentJetPackPower = maxJetPackPower;
         timeLeftToGrapple = maxGrappleTime;
         grappleTimeLimiter = maxGrappleTime / 4;
@@ -751,8 +751,8 @@ public class SPlayerFFA : MonoBehaviour
             Server.clients[_fromId].player.currentKills++;
             ServerSend.UpdatePlayerKillStats(_fromId, Server.clients[_fromId].player.currentKills);
             // Teleport to random spawnpoint
-            transform.position = EnvironmentGeneratorServerSide.spawnPoints[
-                                 Random.Range(0, EnvironmentGeneratorServerSide.spawnPoints.Count)];
+            transform.position = FreeForAllEnvironmentGenerator.spawnPoints[
+                                 Random.Range(0, FreeForAllEnvironmentGenerator.spawnPoints.Count)];
             ServerSend.PlayerPositionFFA(player);
             StartCoroutine(Respawn());
         }

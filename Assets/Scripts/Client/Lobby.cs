@@ -94,10 +94,10 @@ public class Lobby : MonoBehaviour
             InfectionEnvironmentGenerator.lights = new Dictionary<int, GameObject>();
             InfectionEnvironmentGenerator.suns = new Dictionary<int, GameObject>();
         }
-        if(EnvironmentGeneratorServerSide.instance != null)
+        if(FreeForAllEnvironmentGenerator.instance != null)
         {
-            EnvironmentGeneratorServerSide.planets = new Dictionary<int, GameObject>();
-            EnvironmentGeneratorServerSide.nonGravityObjectDict = new Dictionary<int, GameObject>();
+            FreeForAllEnvironmentGenerator.planets = new Dictionary<int, GameObject>();
+            FreeForAllEnvironmentGenerator.nonGravityObjectDict = new Dictionary<int, GameObject>();
         }
 
         ClientClientSide.allClients = new Dictionary<int, string>();

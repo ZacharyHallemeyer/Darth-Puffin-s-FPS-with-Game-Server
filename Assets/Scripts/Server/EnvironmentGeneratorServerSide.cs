@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class EnvironmentGeneratorServerSide : MonoBehaviour
+public class FreeForAllEnvironmentGenerator : MonoBehaviour
 {
-    public static EnvironmentGeneratorServerSide instance;
+    public static FreeForAllEnvironmentGenerator instance;
 
     public static Dictionary<int, GameObject> planets = new Dictionary<int, GameObject>();
     public static Dictionary<int, GameObject> nonGravityObjectDict = new Dictionary<int, GameObject>();

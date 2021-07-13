@@ -261,24 +261,23 @@ public class ClientServerSide
         }
 
         // Send environment to new player
-        foreach (GameObject _planet in EnvironmentGeneratorServerSide.planets.Values)
+        foreach (GameObject _planet in FreeForAllEnvironmentGenerator.planets.Values)
         {
             ServerSend.CreateNewPlanetFFA(id, _planet.transform.position, _planet.transform.localScale, Server.clients[id].sPlayerFFA.gravityMaxDistance);
         }
-        foreach(GameObject _object in EnvironmentGeneratorServerSide.nonGravityObjectDict.Values)
+        foreach(GameObject _object in FreeForAllEnvironmentGenerator.nonGravityObjectDict.Values)
         {
             ServerSend.CreateNonGravityObjectFFA(id, _object.transform.position, _object.transform.localScale,
                                               _object.transform.rotation , _object.name);
         }
 
-        ServerSend.CreateBoundaryFFA(id, Vector3.zero, EnvironmentGeneratorServerSide.BoundaryDistanceFromOrigin);
+        ServerSend.CreateBoundaryFFA(id, Vector3.zero, FreeForAllEnvironmentGenerator.BoundaryDistanceFromOrigin);
     }
 
     /// <summary>Sends the client into the game and informs other clients of the new player.</summary>
     /// <param name="_playerName">The username of the new player.</param>
     public void SendIntoGameInfection()
     {
-        //player = InstantiateTools.instance.InstantiatePlayer();
         player = NetworkManager.instance.InstantiatePlayerInfection();
         player.Initialize(id, userName);
         sPlayerInfection = player.sPlayerInfection;
