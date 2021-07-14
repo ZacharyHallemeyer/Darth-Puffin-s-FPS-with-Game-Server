@@ -17,15 +17,16 @@ public class SPlayerInfection : MonoBehaviour
     private Vector2 moveDirection;
 
     //Movement
-    private readonly int moveSpeed = 4500;
-    private readonly int crouchMoveSpeed = 3000;
-    private readonly int maxBaseSpeed = 20;
-    private readonly int maxCrouchSpeed = 10;
-    private readonly float counterMovement = 0.175f;
-    private readonly float threshold = 0.01f;
+    public int moveSpeed = 4500;
+    public readonly int crouchMoveSpeed = 3000;
+    public int maxBaseSpeed = 20;
+    public readonly int maxCrouchSpeed = 10;
+    public float counterMovement = 0.175f;
+    public float threshold = 0.01f;
     private bool shouldSlide;
     public LayerMask whatIsGround;
     public bool isGrounded;
+    public float gravityForce = 100f;
 
     //Crouch & Slide
     private Vector3 crouchScale = new Vector3(1, 1, 1);
@@ -53,7 +54,7 @@ public class SPlayerInfection : MonoBehaviour
     public float wallrunForce;
     public float maxWallRunCameraTilt, wallRunCameraTilt;
     private float currentHandPosition = .15f;
-    private float wallRunSpeed = 100f, maxWallRunSpeed = 40f;
+    public float wallRunSpeed = 100f, maxWallRunSpeed = 40f;
     public float timeOnWall = 0, maxtimeOnWall = 3f;
     public bool isWallRight, isWallLeft, isWallForward, isWallBackward, isOnWall;
     public Transform gunPosition;
@@ -77,6 +78,7 @@ public class SPlayerInfection : MonoBehaviour
         public float range;
         public float rightHandPosition;
         public float leftHandPosition;
+        public bool isMelee;
     }
 
     public Dictionary<string, GunInformation> allGunInformation { get; private set; } = new Dictionary<string, GunInformation>();
@@ -92,6 +94,8 @@ public class SPlayerInfection : MonoBehaviour
 
     private Vector3 firePoint;
     private Vector3 fireDirection;
+    public float meleeRange = 1f;
+    public LayerMask whatIsPlayer;
 
     public bool isAnimInProgress;
 
@@ -126,6 +130,7 @@ public class SPlayerInfection : MonoBehaviour
             range = 1000f,
             rightHandPosition = -.3f,
             leftHandPosition = -1.5f,
+            isMelee = false,
         };
 
         allGunInformation["Shotgun"] = new GunInformation
@@ -142,6 +147,18 @@ public class SPlayerInfection : MonoBehaviour
             range = 75f,
             rightHandPosition = -.3f,
             leftHandPosition = -.3f,
+            isMelee = false,
+        };
+
+        allGunInformation["Melee"] = new GunInformation
+        {
+            name = "Melee",
+            damage = 10,
+            fireRate = .7f,
+            reloadTime = 1f,
+            rightHandPosition = -.3f,
+            leftHandPosition = -.3f,
+            isMelee = true,
         };
 
         int index = 0;
@@ -151,7 +168,8 @@ public class SPlayerInfection : MonoBehaviour
             gunNames[index] = str;
             index++;
         }
-        currentGun = allGunInformation["Shotgun"];
+        //currentGun = allGunInformation["Shotgun"];
+        currentGun = allGunInformation["Melee"];
         secondaryGun = allGunInformation["Pistol"];
     }
 
@@ -202,8 +220,9 @@ public class SPlayerInfection : MonoBehaviour
     private void Movement()
     {
         SendPlayerData();
-        rb.AddForce(Vector3.down * Time.deltaTime * 10);
 
+        if (!isGrounded)
+            rb.AddForce(-orientation.up * gravityForce * Time.deltaTime, ForceMode.Acceleration);
         if (isJumping) return;
         // Reset jumps if player is on ground
         if (isGrounded) jumpsAvaliable = maxJumps;
@@ -272,14 +291,8 @@ public class SPlayerInfection : MonoBehaviour
             rb.AddForce(orientation.transform.forward * moveDirection.y * crouchMoveSpeed * Time.deltaTime);
             rb.AddForce(orientation.transform.right * moveDirection.x * crouchMoveSpeed * Time.deltaTime);
         }
-        // Wall Running
-        else if (isOnWall)
-        {
-            rb.AddForce(orientation.transform.forward * moveDirection.y * wallRunSpeed * Time.deltaTime, ForceMode.Impulse);
-            rb.AddForce(orientation.transform.right * moveDirection.x * wallRunSpeed * Time.deltaTime, ForceMode.Impulse);
-        }
         // Normal movement on ground
-        else
+        else if (!isOnWall)
         {
             rb.AddForce(orientation.transform.forward * moveDirection.y * moveSpeed * Time.deltaTime * multiplier * multiplierV);
             rb.AddForce(orientation.transform.right * moveDirection.x * moveSpeed * Time.deltaTime * multiplier);
@@ -312,11 +325,13 @@ public class SPlayerInfection : MonoBehaviour
     public void CrouchController()
     {
         if (isCrouching)
-        {        
+        {
             StopCrouch();
         }
-        else if(!isOnWall)
+        else if (!isOnWall)
             StartCrouch();
+        else
+            ServerSend.PlayerStopCrouchInfection(id);
     }
 
     /// <summary>
@@ -324,13 +339,12 @@ public class SPlayerInfection : MonoBehaviour
     /// </summary>
     private void StartCrouch()
     {
-        ServerSend.PlayerStartCrouchInfection(id, crouchScale);
+        ServerSend.PlayerStartCrouchInfection(id);
         isCrouching = true;
-        //transform.localScale = crouchScale;
-        //transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
         if (rb.velocity.magnitude > 0.5f)
             shouldSlide = true;
 
+        CancelInvoke("StopCrouchHelper");
         InvokeRepeating("StartCrouchHelper", 0f, .01f);
         // Prevents guns and other such objects from shrinking
         foreach (Transform child in gameObject.transform)
@@ -358,10 +372,10 @@ public class SPlayerInfection : MonoBehaviour
     /// </summary>
     public void StopCrouch()
     {
-        ServerSend.PlayerStopCrouchInfection(id, playerScale);
+        ServerSend.PlayerStopCrouchInfection(id);
         isCrouching = false;
-        transform.localScale = playerScale;
-        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        CancelInvoke("StartCrouchHelper");
+        InvokeRepeating("StopCrouchHelper", 0f, .01f);
 
         // Prevents guns and other such objects from expanding larger than intended
         foreach (Transform child in gameObject.transform)
@@ -370,7 +384,18 @@ public class SPlayerInfection : MonoBehaviour
 
     public void StopCrouchHelper()
     {
-
+        if (transform.localScale.y < playerScale.y)
+        {
+            transform.localScale += new Vector3(0, .05f, 0);
+            transform.position += new Vector3(0, .05f, 0);
+            ServerSend.PlayerPositionInfection(player);
+            ServerSend.PlayerLocalScaleInfection(player);
+        }
+        else
+        {
+            transform.localScale = playerScale;
+            CancelInvoke("StopCrouchHelper");
+        }
     }
 
     /// <summary>
@@ -420,7 +445,7 @@ public class SPlayerInfection : MonoBehaviour
 
     private void CounterMovement(float x, float y, Vector2 mag)
     {
-        if (!isGrounded || isJumping) return;
+        if (!isGrounded || isJumping || isOnWall) return;
 
         //Slow down sliding
         if (isCrouching)
@@ -470,10 +495,7 @@ public class SPlayerInfection : MonoBehaviour
             rb.useGravity = false;
         // prevents player to be crouched on wall
         if (isCrouching)
-        {
-            Debug.Log("Stop crouch called from wall run");
             StopCrouch();
-        }
 
         // get player off wall if they go over max time
         if (timeOnWall > maxtimeOnWall)
@@ -491,15 +513,22 @@ public class SPlayerInfection : MonoBehaviour
                 WallJump(true);
         }
 
-        // Stick player to wall
-        if (isWallRight)
-            rb.AddForce(orientation.right * wallrunForce * 100 * Time.deltaTime);
-        else if (isWallLeft)
-            rb.AddForce(-orientation.right * wallrunForce * 100 * Time.deltaTime);
-        else if (isWallForward)
-            rb.AddForce(orientation.forward * wallrunForce * 100 * Time.deltaTime);
-        else if (isWallBackward)
-            rb.AddForce(-orientation.forward * wallrunForce * 100 * Time.deltaTime);
+        // Move player
+        if (moveDirection.x != 0 || moveDirection.y != 0)
+        {
+            rb.AddForce(orientation.transform.forward * moveDirection.y * wallRunSpeed * Time.deltaTime, ForceMode.Impulse);
+            rb.AddForce(orientation.transform.right * moveDirection.x * wallRunSpeed * Time.deltaTime, ForceMode.Impulse);
+
+            // Stick player to wall
+            if (isWallRight)
+                rb.AddForce(orientation.right * wallRunSpeed * 1.3f * Time.deltaTime, ForceMode.Impulse);
+            if (isWallLeft)
+                rb.AddForce(-orientation.right * wallRunSpeed * 1.3f * Time.deltaTime, ForceMode.Impulse);
+            if (isWallForward)
+                rb.AddForce(orientation.forward * wallrunForce * 1.3f *Time.deltaTime, ForceMode.Impulse);
+            if (isWallBackward)
+                rb.AddForce(-orientation.forward * wallrunForce * 1.3f *Time.deltaTime, ForceMode.Impulse);
+        }
     }
 
     /// <summary>
@@ -557,25 +586,25 @@ public class SPlayerInfection : MonoBehaviour
 
         // Jumps off wall (opposite direction relative to wall)
         // If wall to left
-        if (Physics.Raycast(transform.position, -orientation.right, out hit, 1f))
+        if (Physics.Raycast(transform.position, -orientation.right, out hit, wallDistance))
         {
             direction = -(hit.point - transform.position).normalized;
             rb.AddForce(direction * jumpForce * forceMultiplier);
         }
         // If wall to right
-        else if (Physics.Raycast(transform.position, orientation.right, out hit, 1f))
+        else if (Physics.Raycast(transform.position, orientation.right, out hit, wallDistance))
         {
             direction = -(hit.point - transform.position).normalized;
             rb.AddForce(direction * jumpForce * forceMultiplier);
         }
         // If wall in front
-        else if (Physics.Raycast(transform.position, orientation.forward, out hit, 1f))
+        else if (Physics.Raycast(transform.position, orientation.forward, out hit, wallDistance))
         {
             direction = -(hit.point - transform.position).normalized;
             rb.AddForce(direction * jumpForce * forceMultiplier);
         }
         // If wall behind
-        else if (Physics.Raycast(transform.position, -orientation.forward, out hit, 1f))
+        else if (Physics.Raycast(transform.position, -orientation.forward, out hit, wallDistance))
         {
             direction = -(hit.point - transform.position).normalized;
             rb.AddForce(direction * jumpForce * forceMultiplier);
@@ -595,7 +624,7 @@ public class SPlayerInfection : MonoBehaviour
     private IEnumerator WallJumpHelper()
     {
         yield return new WaitForSeconds(.1f);
-        rb.AddForce(orientation.up * jumpForce / 4);
+        rb.AddForce(orientation.up * jumpForce);
     }
 
 
@@ -615,10 +644,22 @@ public class SPlayerInfection : MonoBehaviour
         firePoint = _firePoint;
         fireDirection = _fireDirection;
 
-        if (!isShooting)
+        if(currentGun.isMelee)
+        {
+            Melee();
+        }
+        else if (!isShooting)
         {
             SingleFireShoot();
         }
+    }
+
+    private void Melee()
+    {
+        ServerSend.PlayerMeleeInfection(id);
+        isAnimInProgress = true;
+        foreach (Collider _collider in Physics.OverlapSphere(firePoint, meleeRange, whatIsPlayer))
+            _collider.GetComponent<SPlayerInfection>().TakeDamage(id, currentGun.damage);
     }
 
     /// <summary>
@@ -749,7 +790,7 @@ public class SPlayerInfection : MonoBehaviour
     /// <param name="_damage"> Value to subtract from health </param>
     public void TakeDamage(int _fromId, float _damage)
     {
-        if (player.health <= 0)
+        if (player.health <= 0 || _fromId == id)
             return;
 
         player.health -= _damage;
@@ -780,6 +821,7 @@ public class SPlayerInfection : MonoBehaviour
         yield return new WaitForSeconds(5f);
 
         health = maxHealth;
+        player.health = player.maxHealth;
         ServerSend.PlayerRespawnedInfection(player);
     }
 

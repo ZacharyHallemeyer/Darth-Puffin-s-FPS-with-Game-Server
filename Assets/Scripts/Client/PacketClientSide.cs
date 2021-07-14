@@ -29,6 +29,7 @@ public enum ServerPackets
     otherPlayerStopGrapple,
     playerStopGrapple,
     otherPlayerSwitchedWeapon,
+    playerMelee,
     playerSinglefire,
     playerStartAutomaticFire,
     playerContinueAutomaticFire,

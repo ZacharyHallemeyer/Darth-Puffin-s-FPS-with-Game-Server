@@ -362,6 +362,7 @@ public class ClientClientSide : MonoBehaviour
             { (int)ServerPackets.otherPlayerTakenDamage, ClientHandle.OtherPlayerTakenDamageInfection },
             { (int)ServerPackets.playerHealth, ClientHandle.PlayerHealthInfection },
             { (int)ServerPackets.playerRespawned, ClientHandle.PlayerRespawnedInfection },
+            { (int)ServerPackets.playerMelee, ClientHandle.PlayerMeleeInfection },
             { (int)ServerPackets.otherPlayerSwitchedWeapon, ClientHandle.OtherPlayerSwitchedWeaponInfection },
             { (int)ServerPackets.playerSinglefire, ClientHandle.PlayerShootInfection },
             { (int)ServerPackets.playerReload, ClientHandle.PlayerReloadInfection },

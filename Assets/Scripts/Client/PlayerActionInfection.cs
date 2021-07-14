@@ -43,10 +43,12 @@ public class PlayerActionInfection : MonoBehaviour
 
     public GameObject gunPistol;
     public GameObject gunShotgun;
-    public ParticleSystem pistolMuzzleFlash;
-    public ParticleSystem shotgunMuzzleFlash;
+    public GameObject gunMelee;
+    public ParticleSystem pistolBullet;
+    public ParticleSystem shotgunBullet;
     public ParticleSystem pistol;
     public ParticleSystem shotgun;
+    public ParticleSystem melee;
 
     public GameObject[] hitParticleGameObjects;
     public ParticleSystem[] hitParticles;
@@ -106,7 +108,7 @@ public class PlayerActionInfection : MonoBehaviour
         {
             name = "Pistol",
             gunContainer = gunPistol,
-            bullet = pistolMuzzleFlash,
+            bullet = pistolBullet,
             gun = pistol,
             originalGunRadius = pistol.shape.radius,
             reloadTime = 1f,
@@ -116,8 +118,17 @@ public class PlayerActionInfection : MonoBehaviour
         {
             name = "Shotgun",
             gunContainer = gunShotgun,
-            bullet = shotgunMuzzleFlash,
+            bullet = shotgunBullet,
             gun = shotgun,
+            originalGunRadius = shotgun.shape.radius,
+            reloadTime = 1f,
+            fireRate = 1f,
+        };
+        allGunInformation["Melee"] = new GunInformation
+        {
+            name = "Melee",
+            gunContainer = gunMelee,
+            gun = melee,
             originalGunRadius = shotgun.shape.radius,
             reloadTime = 1f,
             fireRate = 1f,
@@ -185,7 +196,6 @@ public class PlayerActionInfection : MonoBehaviour
 
     public void StartCrouch()
     {
-        isCrouching = true;
         // Prevents guns and other such objects from expanding larger than intended
         foreach (Transform child in gameObject.transform)
             child.localScale = playerScale;
@@ -202,6 +212,43 @@ public class PlayerActionInfection : MonoBehaviour
     }
 
     #region Guns
+
+    public void Melee()
+    {
+        isAnimInProgress = true;
+        InvokeRepeating("MeleeHelperSwing", 0, .01f);
+    }
+
+    public void MeleeHelperSwing()
+    {
+        Debug.Log("MeleeHelperSwing");
+        if(gunMelee.transform.localEulerAngles.y > 270)
+        {
+            Debug.Log(gunMelee.transform.localEulerAngles.y);
+            gunMelee.transform.localRotation *= Quaternion.Euler(0, -1, 0);
+        }
+        else
+        {
+            gunMelee.transform.localRotation = Quaternion.Euler(-45, -90, 0);
+            InvokeRepeating("MeleeHelperReturn", 0, .01f);
+            CancelInvoke("MeleeHelperSwing");
+        }
+    }
+
+    public void MeleeHelperReturn()
+    {
+        Debug.Log("MeleeHelperReturn");
+        if (gunMelee.transform.localEulerAngles.y < 351)
+        {
+            gunMelee.transform.localRotation *= Quaternion.Euler(0, 1, 0);
+        }
+        else
+        {
+            gunMelee.transform.localRotation = Quaternion.Euler(-45, -9, 0);
+            CancelInvoke("MeleeHelperReturn");
+            isAnimInProgress = false;
+        }
+    }
 
     /// <summary>
     /// Single fire animation start

@@ -738,7 +738,7 @@ public class SPlayerFFA : MonoBehaviour
     /// <param name="_damage"> Value to subtract from health </param>
     public void TakeDamage(int _fromId, float _damage)
     {
-        if (player.health <= 0)
+        if (player.health <= 0 || _fromId == id)
             return;
 
         player.health -= _damage;

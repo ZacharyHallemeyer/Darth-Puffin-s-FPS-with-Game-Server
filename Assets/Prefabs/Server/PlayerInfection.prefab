@@ -246,13 +246,17 @@ MonoBehaviour:
   player: {fileID: 6120784216943288319}
   health: 0
   maxHealth: 100
+  moveSpeed: 4500
+  maxBaseSpeed: 20
+  counterMovement: 0.175
+  threshold: 0.01
   whatIsGround:
     serializedVersion: 2
     m_Bits: 1536
   isGrounded: 0
+  gravityForce: 500
   slideForce: 400
   slideCounterMovement: 0.2
-  crouchGunDegree: 50
   isCrouching: 0
   isSliding: 0
   jumpForce: 550
@@ -267,6 +271,8 @@ MonoBehaviour:
   wallrunForce: 0
   maxWallRunCameraTilt: 10
   wallRunCameraTilt: 0
+  wallRunSpeed: 100
+  maxWallRunSpeed: 40
   timeOnWall: 0
   maxtimeOnWall: 10
   isWallRight: 0

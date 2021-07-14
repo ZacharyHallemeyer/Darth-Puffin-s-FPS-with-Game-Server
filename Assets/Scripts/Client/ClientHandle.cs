@@ -498,11 +498,9 @@ public class ClientHandle : MonoBehaviour
     public static void PlayerStartCrouchInfection(PacketClientSide _packet)
     {
         int _id = _packet.ReadInt();
-        Vector3 _localScale = _packet.ReadVector3();
 
         if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
         {
-            _player.transform.localScale = _localScale;
             CInfectionGameManager.playersActionsInfection[_id].StartCrouch();
         }
     }
@@ -514,11 +512,9 @@ public class ClientHandle : MonoBehaviour
     public static void PlayerStopCrouchInfection(PacketClientSide _packet)
     {
         int _id = _packet.ReadInt();
-        Vector3 _localScale= _packet.ReadVector3();
 
         if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
         {
-            _player.transform.localScale = _localScale;
             CInfectionGameManager.playersActionsInfection[_id].StopCrouch();
         }
     }
@@ -597,14 +593,24 @@ public class ClientHandle : MonoBehaviour
     /// 
     /// </summary>
     /// <param name="_packet"></param>
+    public static void PlayerMeleeInfection(PacketClientSide _packet)
+    {
+        int _fromId = _packet.ReadInt();
+
+        CInfectionGameManager.playersActionsInfection[_fromId].Melee();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_packet"></param>
     public static void PlayerShootInfection(PacketClientSide _packet)
     {
         int _fromId = _packet.ReadInt();
         int _currentAmmo = _packet.ReadInt();
         int _reserveAmmo = _packet.ReadInt();
         CInfectionGameManager.playersActionsInfection[_fromId].PlayerStartSingleFireAnim(_currentAmmo, _reserveAmmo);
-    }
-
+    } 
     /// <summary>
     /// 
     /// </summary>

@@ -622,17 +622,12 @@ public class ServerSend
         }
     }
 
-
-
-    /// <summary>Sends a player's updated crouch state to all clients </summary>
-    /// <param name="_player">The player whose rotation to update.</param>
-    public static void PlayerStartCrouchInfection(int _id, Vector3 _localScale)
+    public static void PlayerMeleeInfection(int _id)
     {
         // Send player rotation and orientation to all clients
-        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerStartCrouch))
+        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerMelee))
         {
             _packet.Write(_id);
-            _packet.Write(_localScale);
 
             SendTCPDataToAll(_packet);
         }
@@ -640,15 +635,27 @@ public class ServerSend
 
     /// <summary>Sends a player's updated crouch state to all clients </summary>
     /// <param name="_player">The player whose rotation to update.</param>
-    public static void PlayerStopCrouchInfection(int _id, Vector3 _localScale)
+    public static void PlayerStartCrouchInfection(int _id)
+    {
+        // Send player rotation and orientation to all clients
+        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerStartCrouch))
+        {
+            _packet.Write(_id);
+
+            SendTCPData(_id, _packet);
+        }
+    }
+
+    /// <summary>Sends a player's updated crouch state to all clients </summary>
+    /// <param name="_player">The player whose rotation to update.</param>
+    public static void PlayerStopCrouchInfection(int _id)
     {
         // Send player rotation and orientation to all clients
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerStopCrouch))
         {
             _packet.Write(_id);
-            _packet.Write(_localScale);
 
-            SendTCPDataToAll(_packet);
+            SendTCPData(_id, _packet);
         }
     }
 
