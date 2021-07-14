@@ -48,13 +48,9 @@ public class CFFAGameManager : MonoBehaviour
             _player = Instantiate(playerPrefab, _position, _rotation);
             _player.GetComponent<PlayerManager>().Initialize(_id, _username);
             players.Add(_id, _player.GetComponent<PlayerManager>());
-            foreach (PlayerManager.GunInformation _gunInfo in CFFAGameManager.players[_id].allGunInformation.Values)
-            {
-                if (_gunInfo.name == _gunName)
-                {
-                    _gunInfo.gunContainer.SetActive(true);
-                }
-            }
+            _player.GetComponent<PlayerActionsFFA>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo,
+                                                    _maxGrappleTime, _maxJetPackTime);
+            playersActions.Add(_id, _player.GetComponent<PlayerActionsFFA>());
         }
         else
         {

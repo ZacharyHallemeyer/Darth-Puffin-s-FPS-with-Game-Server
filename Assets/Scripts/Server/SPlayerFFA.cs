@@ -612,17 +612,6 @@ public class SPlayerFFA : MonoBehaviour
         secondaryGun = temp;
 
         ServerSend.PlayerSwitchWeaponFFA(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
-        // Send to all clients this player has switched it weapon
-        foreach (ClientServerSide _client in Server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                if (_client.id != id)
-                {
-                    ServerSend.OtherPlayerSwitchedWeaponFFA(id, _client.id, currentGun.name);
-                }
-            }
-        }
     }
 
     #endregion

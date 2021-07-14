@@ -128,22 +128,6 @@ public class PlayerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Show other player take damage animation
-    /// </summary>
-    /// <param name="_otherPlayerId"> player that took damage id </param>
-    public void OtherPlayerTakenDamage(int _otherPlayerId)
-    {
-        CFFAGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = damagedPlayerMaterial;
-        StartCoroutine(OtherPlayerTakeDamageHelper(_otherPlayerId));
-    }
-
-    public IEnumerator OtherPlayerTakeDamageHelper(int _otherPlayerId)
-    {
-        yield return new WaitForSeconds(.5f); 
-        CFFAGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = basePlayerMaterial;
-    }
-
-    /// <summary>
     /// Destroys grapple rope for specific player 
     /// </summary>
     /// <param name="_otherPlayerId"> player to destroy rope </param>

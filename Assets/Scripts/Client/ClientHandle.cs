@@ -138,7 +138,7 @@ public class ClientHandle : MonoBehaviour
         int _fromId = _packet.ReadInt();
         int _toId = _packet.ReadInt();
 
-        CFFAGameManager.players[_toId].OtherPlayerTakenDamage(_fromId);
+        CFFAGameManager.playersActions[_toId].OtherPlayerTakenDamage(_fromId);
     }
 
     /// <summary>

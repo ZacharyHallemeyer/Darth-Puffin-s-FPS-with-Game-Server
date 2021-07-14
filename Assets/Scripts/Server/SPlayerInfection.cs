@@ -153,7 +153,7 @@ public class SPlayerInfection : MonoBehaviour
         allGunInformation["Melee"] = new GunInformation
         {
             name = "Melee",
-            damage = 10,
+            damage = 90,
             fireRate = .7f,
             reloadTime = 1f,
             rightHandPosition = -.3f,
@@ -659,7 +659,14 @@ public class SPlayerInfection : MonoBehaviour
         ServerSend.PlayerMeleeInfection(id);
         isAnimInProgress = true;
         foreach (Collider _collider in Physics.OverlapSphere(firePoint, meleeRange, whatIsPlayer))
-            _collider.GetComponent<SPlayerInfection>().TakeDamage(id, currentGun.damage);
+        {
+            // Kill in one melee if player is moving real fast
+            if(rb.velocity.magnitude > 20)
+                _collider.GetComponent<SPlayerInfection>().TakeDamage(id, maxHealth);
+            else
+                _collider.GetComponent<SPlayerInfection>().TakeDamage(id, currentGun.damage);
+
+        }
     }
 
     /// <summary>
@@ -766,17 +773,6 @@ public class SPlayerInfection : MonoBehaviour
         secondaryGun = temp;
 
         ServerSend.PlayerSwitchWeaponInfection(id, currentGun.name, currentGun.currentAmmo, currentGun.reserveAmmo);
-        // Send to all clients this player has switched it weapon
-        foreach (ClientServerSide _client in Server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                if (_client.id != id)
-                {
-                    ServerSend.OtherPlayerSwitchedWeaponInfection(id, _client.id, currentGun.name);
-                }
-            }
-        }
     }
 
     #endregion

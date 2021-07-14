@@ -275,7 +275,8 @@ public class ServerSend
         {
             _packet.Write(_toClient);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -291,7 +292,8 @@ public class ServerSend
             _packet.Write(_toClient);
             _packet.Write(_currentGrappleTime);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -316,7 +318,8 @@ public class ServerSend
                         _packet.Write(_position);
                         _packet.Write(_grapplePoint);
 
-                        SendUDPData(_fromClient, _packet);
+                        //SendUDPData(_fromClient, _packet);
+                        SendUDPDataToAll(_packet);
                     }
                 }
             }
@@ -333,41 +336,8 @@ public class ServerSend
         {
             _packet.Write(_toClient);
 
-            SendTCPData(_toClient, _packet);
-        }
-        foreach (ClientServerSide _client in Server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                if (_client.id != _toClient)
-                {
-                    using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.otherPlayerStopGrapple))
-                    {
-                        _packet.Write(_toClient);
-                        _packet.Write(_client.id);
-
-                        SendUDPData(_toClient, _packet);
-                    }
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Sends to specific client data of a client changing weapon
-    /// </summary>
-    /// <param name="_fromClient"> client that changed weapon </param>
-    /// <param name="_toClient"> client to send info </param>
-    /// <param name="_gunName"> client that changed weapons new weapon's name </param>
-    public static void OtherPlayerSwitchedWeaponFFA(int _fromClient, int _toClient, string _gunName)
-    {
-        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.otherPlayerSwitchedWeapon))
-        {
-            _packet.Write(_fromClient);
-            _packet.Write(_toClient);
-            _packet.Write(_gunName);
-
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -385,7 +355,8 @@ public class ServerSend
             _packet.Write(_currentAmmo);
             _packet.Write(_reserveAmmo);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -403,7 +374,8 @@ public class ServerSend
             _packet.Write(_currentAmmo);
             _packet.Write(_reserveAmmo);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -421,7 +393,8 @@ public class ServerSend
             _packet.Write(_currentAmmo);
             _packet.Write(_reserveAmmo);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -435,7 +408,8 @@ public class ServerSend
         {
             _packet.Write(_toClient);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -453,7 +427,8 @@ public class ServerSend
             _packet.Write(_currentAmmo);
             _packet.Write(_reserveAmmo);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -473,7 +448,8 @@ public class ServerSend
             _packet.Write(_reserveAmmo);
             _packet.Write(_gunName);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -489,7 +465,8 @@ public class ServerSend
             _packet.Write(_toClient);
             _packet.Write(_hitPoint);
 
-            SendTCPData(_toClient, _packet);
+            //SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -568,7 +545,6 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.username);
-            //_packet.Write(_player.transform.position);
             _packet.Write(InfectionEnvironmentGenerator.spawnPoints[
                           Random.Range(0, InfectionEnvironmentGenerator.spawnPoints.Count)]);
             _packet.Write(_player.transform.rotation);
@@ -622,6 +598,10 @@ public class ServerSend
         }
     }
 
+    /// <summary>
+    /// Sends all player that player with _id is performing a melee attack
+    /// </summary>
+    /// <param name="_id"> client that is performing a melee attack </param>
     public static void PlayerMeleeInfection(int _id)
     {
         // Send player rotation and orientation to all clients
@@ -705,25 +685,6 @@ public class ServerSend
         }
     }
 
-
-    /// <summary>
-    /// Sends to specific client data of a client changing weapon
-    /// </summary>
-    /// <param name="_fromClient"> client that changed weapon </param>
-    /// <param name="_toClient"> client to send info </param>
-    /// <param name="_gunName"> client that changed weapons new weapon's name </param>
-    public static void OtherPlayerSwitchedWeaponInfection(int _fromClient, int _toClient, string _gunName)
-    {
-        using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.otherPlayerSwitchedWeapon))
-        {
-            _packet.Write(_fromClient);
-            _packet.Write(_toClient);
-            _packet.Write(_gunName);
-
-            SendTCPData(_toClient, _packet);
-        }
-    }
-
     /// <summary>
     /// Sends info to specific client to start single fire on client side
     /// </summary>
@@ -738,7 +699,7 @@ public class ServerSend
             _packet.Write(_currentAmmo);
             _packet.Write(_reserveAmmo);
 
-            SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -756,7 +717,7 @@ public class ServerSend
             _packet.Write(_currentAmmo);
             _packet.Write(_reserveAmmo);
 
-            SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -776,7 +737,7 @@ public class ServerSend
             _packet.Write(_reserveAmmo);
             _packet.Write(_gunName);
 
-            SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -792,7 +753,7 @@ public class ServerSend
             _packet.Write(_toClient);
             _packet.Write(_hitPoint);
 
-            SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 

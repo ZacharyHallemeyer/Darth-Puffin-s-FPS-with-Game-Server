@@ -10,6 +10,15 @@ public class PlayerActionsFFA : MonoBehaviour
     public InputMaster inputMaster;
     public PlayerUI playerUI;
 
+    // Materials
+    public Material basePlayerMaterial;
+    public Material damagedPlayerMaterial;
+    public Material deadPlayerMaterial;
+
+    public Shader basePlayerShader;
+    public Shader damagedPlayerShader;
+    public Shader deadPlayerShader;
+
     // Movement
     public Transform orientation;
     public LayerMask whatIsGravityObject;
@@ -73,12 +82,12 @@ public class PlayerActionsFFA : MonoBehaviour
     {
         id = _id;
         SetGunInformation();
-        if (gameObject.name != "LocalPlayerFFA(Clone)")
+        PlayerInitGun(_gunName, _currentAmmo, _reserveAmmo);
+        if (gameObject.name[0] != 'L')
         {
             enabled = false;
             return;
         }
-        PlayerInitGun(_gunName, _currentAmmo, _reserveAmmo);
         playerUI.SetMaxGrapple(_maxGrappleTime);
         playerUI.SetMaxJetPack(_maxJetPackTime);
     }
@@ -469,6 +478,21 @@ public class PlayerActionsFFA : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Show other player take damage animation
+    /// </summary>
+    /// <param name="_otherPlayerId"> player that took damage id </param>
+    public void OtherPlayerTakenDamage(int _otherPlayerId)
+    {
+        CFFAGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = damagedPlayerMaterial;
+        StartCoroutine(OtherPlayerTakeDamageHelper(_otherPlayerId));
+    }
+
+    public IEnumerator OtherPlayerTakeDamageHelper(int _otherPlayerId)
+    {
+        yield return new WaitForSeconds(.5f);
+        CFFAGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = basePlayerMaterial;
+    }
     #endregion
 
     #region Grapple

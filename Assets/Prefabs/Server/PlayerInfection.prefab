@@ -286,6 +286,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   isShooting: 0
+  meleeRange: 3
+  whatIsPlayer:
+    serializedVersion: 2
+    m_Bits: 256
   isAnimInProgress: 0
 --- !u!1 &7612817930700101615
 GameObject:

@@ -41,6 +41,7 @@ public class PlayerActionInfection : MonoBehaviour
     }
     public Dictionary<string, GunInformation> allGunInformation { get; private set; } = new Dictionary<string, GunInformation>();
 
+    public Transform firePoint;
     public GameObject gunPistol;
     public GameObject gunShotgun;
     public GameObject gunMelee;
@@ -76,12 +77,9 @@ public class PlayerActionInfection : MonoBehaviour
     {
         id = _id;
         SetGunInformation();
-        if (gameObject.name.Substring(0, 5) != "Local")
-        {
-            enabled = false;
-            return;
-        }
         PlayerInitGun(_gunName, _currentAmmo, _reserveAmmo);
+        if (gameObject.name.Substring(0, 5) != "Local")
+            enabled = false;
     }
 
     private void Awake()
@@ -168,7 +166,7 @@ public class PlayerActionInfection : MonoBehaviour
             if (inputMaster.Player.Shoot.ReadValue<float>() != 0 && timeSinceLastShoot > currentGun.fireRate)
             {
                 timeSinceLastShoot = 0;
-                ClientSend.PlayerShootInfection(playerCam.transform.position, playerCam.transform.forward);
+                ClientSend.PlayerShootInfection(firePoint.position, playerCam.transform.forward);
             }
         }
         if (inputMaster.Player.Reload.triggered)
@@ -221,15 +219,17 @@ public class PlayerActionInfection : MonoBehaviour
 
     public void MeleeHelperSwing()
     {
-        Debug.Log("MeleeHelperSwing");
-        if(gunMelee.transform.localEulerAngles.y > 270)
+        if(gunMelee.transform.localEulerAngles.y > 289 || gunMelee.transform.localEulerAngles.y == 0)
         {
-            Debug.Log(gunMelee.transform.localEulerAngles.y);
-            gunMelee.transform.localRotation *= Quaternion.Euler(0, -1, 0);
+            gunMelee.transform.localRotation *= Quaternion.Euler(0, -5, 0);
+        }
+        else if(gunMelee.transform.localEulerAngles.x > 350 || gunMelee.transform.localEulerAngles.x == 0)
+        {
+            gunMelee.transform.localRotation *= Quaternion.Euler(-2, 0, 0);
         }
         else
         {
-            gunMelee.transform.localRotation = Quaternion.Euler(-45, -90, 0);
+            gunMelee.transform.localRotation = Quaternion.Euler(350, 290, 0);
             InvokeRepeating("MeleeHelperReturn", 0, .01f);
             CancelInvoke("MeleeHelperSwing");
         }
@@ -237,14 +237,17 @@ public class PlayerActionInfection : MonoBehaviour
 
     public void MeleeHelperReturn()
     {
-        Debug.Log("MeleeHelperReturn");
-        if (gunMelee.transform.localEulerAngles.y < 351)
+        if (gunMelee.transform.localEulerAngles.y < 354)
         {
-            gunMelee.transform.localRotation *= Quaternion.Euler(0, 1, 0);
+            gunMelee.transform.localRotation *= Quaternion.Euler(0, 5, 0);
+        }
+        else if (gunMelee.transform.localEulerAngles.x > 0 && gunMelee.transform.localEulerAngles.x < 349)
+        {
+            gunMelee.transform.localRotation *= Quaternion.Euler(2, 0, 0);
         }
         else
         {
-            gunMelee.transform.localRotation = Quaternion.Euler(-45, -9, 0);
+            gunMelee.transform.localRotation = Quaternion.Euler(0, 0, 0);
             CancelInvoke("MeleeHelperReturn");
             isAnimInProgress = false;
         }
@@ -437,13 +440,13 @@ public class PlayerActionInfection : MonoBehaviour
     /// <param name="_gunName"> client's current weapon </param>
     public void ShowOtherPlayerActiveWeapon(int _id, string _gunName)
     {
-        if (CInfectionGameManager.players.TryGetValue(_id, out PlayerManager _player))
+        if (CInfectionGameManager.playersActionsInfection.TryGetValue(_id, out PlayerActionInfection _player))
         {
-            _player = CInfectionGameManager.players[_id];
+            _player = CInfectionGameManager.playersActionsInfection[_id];
         }
         else return;
 
-        foreach (PlayerManager.GunInformation _gunInfo in _player.allGunInformation.Values)
+        foreach (GunInformation _gunInfo in _player.allGunInformation.Values)
         {
             if (_player.allGunInformation[_gunInfo.name].gunContainer.activeSelf == true)
                 _player.allGunInformation[_gunInfo.name].gunContainer.SetActive(false);

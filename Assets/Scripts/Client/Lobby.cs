@@ -20,6 +20,9 @@ public class Lobby : MonoBehaviour
     public GameObject lobbyRowPrefab;
     public LobbyRow[] lobbyRows;
 
+    public TextMeshProUGUI publicIP;
+    public TextMeshProUGUI localIP;
+
     public Button startButton;
 
     private void Awake()
@@ -53,10 +56,13 @@ public class Lobby : MonoBehaviour
             lobbyRows[_clientId - 1].username = _lobbyRow.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             lobbyRows[_clientId - 1].username.text = ClientClientSide.allClients[_clientId];
         }
-        Debug.Log(GetIPAddress());
-    }
 
-    static string GetIPAddress()
+        publicIP.text = GetPublicIPAddress();
+        IPHostEntry ipHostEntry = Dns.GetHostEntry(string.Empty);
+        localIP.text = Dns.GetHostEntry(string.Empty).AddressList[5].ToString();
+    } 
+
+    static string GetPublicIPAddress()
     {
         string address = "";
         WebRequest request = WebRequest.Create("http://checkip.dyndns.org/");

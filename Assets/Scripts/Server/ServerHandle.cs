@@ -143,10 +143,10 @@ public class ServerHandle
     /// <param name="_packet"> position and grapple point </param>
     public static void PlayerContinueGrappling(int _fromClient, PackerServerSide _packet)
     {
-        Vector3 _position = _packet.ReadVector3();
-        Vector3 _grapplePoint = _packet.ReadVector3();
+        //Vector3 _position = _packet.ReadVector3();
+        //Vector3 _grapplePoint = _packet.ReadVector3();
 
-        ServerSend.OtherPlayerContinueGrappleFFA(_fromClient, _position, _grapplePoint);
+        //ServerSend.OtherPlayerContinueGrappleFFA(_fromClient, _position, _grapplePoint);
     }
 
     /// <summary>

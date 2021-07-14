@@ -57,13 +57,9 @@ public class CInfectionGameManager : MonoBehaviour
             _player = Instantiate(playerPrefab, _position, _rotation);
             _player.GetComponent<PlayerManager>().Initialize(_id, _username);
             players.Add(_id, _player.GetComponent<PlayerManager>());
-            foreach (PlayerManager.GunInformation _gunInfo in players[_id].allGunInformation.Values)
-            {
-                if (_gunInfo.name == _gunName)
-                {
-                    _gunInfo.gunContainer.SetActive(true);
-                }
-            }
+            _player.GetComponent<PlayerActionInfection>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo);
+            playersActionsInfection.Add(_id, _player.GetComponent<PlayerActionInfection>());
+            playersActionsInfection[_id].PlayerInitGun(_gunName, _currentAmmo, _reserveAmmo);
         }
         else
         {
