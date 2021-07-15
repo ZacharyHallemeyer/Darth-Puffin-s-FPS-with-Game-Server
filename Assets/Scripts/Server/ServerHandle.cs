@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class ServerHandle
 {
@@ -34,6 +34,7 @@ public class ServerHandle
     /// <param name="_packet"> game mode name to send clients into </param>
     public static void SendLobbyIntoGame(int _fromClient, PackerServerSide _packet)
     {
+        int[] _infectedIds = null;
         string gameModeName = _packet.ReadString();
 
         foreach(ClientServerSide _client in ClientServerSide.allClients.Values)
@@ -53,7 +54,9 @@ public class ServerHandle
                     _client.SendIntoGameFreeForAll();
                     break;
                 case "Infection":
-                    _client.SendIntoGameInfection();
+                    if(_infectedIds == null)
+                        _infectedIds = SInfectionGameManager.ChooseInfectedIds(1, ClientServerSide.allClients.Keys.ToArray());
+                    _client.SendIntoGameInfection(_infectedIds);
                     break;
                 case "WaveMode":
                     _client.SendIntoGameFreeForAll();

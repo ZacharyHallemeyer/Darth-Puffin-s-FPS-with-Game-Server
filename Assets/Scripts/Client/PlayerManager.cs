@@ -120,11 +120,6 @@ public class PlayerManager : MonoBehaviour
     public void SetHealth(float _health)
     {
         health = _health;
-
-        if (health <= 0)
-        {
-            Die();
-        }
     }
 
     /// <summary>
@@ -134,15 +129,6 @@ public class PlayerManager : MonoBehaviour
     public void ClearOtherPlayerRope(int _otherPlayerId)
     {
         CFFAGameManager.players[_otherPlayerId].lineRenderer.positionCount = 0;
-    }
-
-    /// <summary>
-    /// die animation
-    /// </summary>
-    public void Die()
-    {
-        model.material.shader = deadPlayerShader;
-        model.material = deadPlayerMaterial;
     }
 
     /// <summary>

@@ -126,7 +126,10 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         int _health = _packet.ReadInt();
 
-        CFFAGameManager.players[_id].SetHealth(_health);
+
+        CFFAGameManager.players[_id].health = _health;
+        if (_health < 0)
+            CFFAGameManager.players[_id].health = 0;
     }
 
     /// <summary>
@@ -438,12 +441,13 @@ public class ClientHandle : MonoBehaviour
         string _gunName = _packet.ReadString();
         int _currentAmmo = _packet.ReadInt();
         int _reserveAmmo = _packet.ReadInt();
+        bool _isInfected = _packet.ReadBool();
 
         // Turn off lobby UI if it has not already
         if (ClientClientSide.instance.lobby.lobbyParent.activeInHierarchy)
             ClientClientSide.instance.lobby.lobbyParent.SetActive(false);
         CInfectionGameManager.instance.SpawnPlayer(_id, _username, _position, _rotation, _gunName, _currentAmmo,
-                                                   _reserveAmmo);
+                                                   _reserveAmmo, _isInfected);
     }
 
     /// <summary>
@@ -480,7 +484,7 @@ public class ClientHandle : MonoBehaviour
     /// Updates player position 
     /// </summary>
     /// <param name="_packet"></param>
-    public static void PlayerLocalPlayerInfection(PacketClientSide _packet)
+    public static void PlayerLocalScaleInfection(PacketClientSide _packet)
     {
         int _id = _packet.ReadInt();
         Vector3 _localScale = _packet.ReadVector3();
@@ -550,7 +554,12 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         int _health = _packet.ReadInt();
 
-        CInfectionGameManager.players[_id].SetHealth(_health);
+        CInfectionGameManager.players[_id].health = _health;
+        if(_health < 0)
+        {
+            CInfectionGameManager.players[_id].health = 0;
+            CInfectionGameManager.playersActionsInfection[_id].Die(_id);
+        }
     }
 
     /// <summary>
@@ -572,8 +581,11 @@ public class ClientHandle : MonoBehaviour
     public static void PlayerRespawnedInfection(PacketClientSide _packet)
     {
         int _id = _packet.ReadInt();
+        int _health = _packet.ReadInt();
+        string _gunName= _packet.ReadString();
 
-        CInfectionGameManager.players[_id].Respawn();
+        CInfectionGameManager.playersActionsInfection[_id].Respawn(_health);
+        CInfectionGameManager.playersActionsInfection[_id].MakeInfected(_gunName);
     }
 
     /// <summary>

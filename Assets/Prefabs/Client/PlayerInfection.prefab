@@ -373,15 +373,15 @@ MonoBehaviour:
   maxHealth: 100
   model: {fileID: 3779463834754585854}
   playerActionsFFA: {fileID: 0}
-  playerActionsInfection: {fileID: 0}
+  playerActionsInfection: {fileID: 7559552841026009356}
   playerUI: {fileID: 0}
-  basePlayerMaterial: {fileID: 2100000, guid: 03487115395d5be46b16531572bc0f86, type: 2}
+  basePlayerMaterial: {fileID: 2100000, guid: 2871d9f3e93c54c4fac02f47e0296ab3, type: 2}
   damagedPlayerMaterial: {fileID: 2100000, guid: 4b428e8457040fe49934e700f022bbad,
     type: 2}
-  deadPlayerMaterial: {fileID: 2100000, guid: 4b428e8457040fe49934e700f022bbad, type: 2}
+  deadPlayerMaterial: {fileID: 2100000, guid: 558591ebbe63fc94aa45e7404ebd35ac, type: 2}
   basePlayerShader: {fileID: -6465566751694194690, guid: bbb452cb658707140a17d4162bcd72ae,
     type: 3}
-  damagedPlayerShader: {fileID: -6465566751694194690, guid: fd8ca4da5f7df55468017af32c1cfa6b,
+  damagedPlayerShader: {fileID: -6465566751694194690, guid: bbb452cb658707140a17d4162bcd72ae,
     type: 3}
   deadPlayerShader: {fileID: -6465566751694194690, guid: d19469e9c8072d848b76c6dbce1de4f7,
     type: 3}
@@ -411,20 +411,34 @@ MonoBehaviour:
     type: 3}
   isCrouching: 0
   basePlayerMaterial: {fileID: 2100000, guid: 2871d9f3e93c54c4fac02f47e0296ab3, type: 2}
-  damagedPlayerMaterial: {fileID: 2100000, guid: 4b428e8457040fe49934e700f022bbad,
+  infectedPlayerMaterial: {fileID: 2100000, guid: 036d61419b45f0141a3154cbfd3f00ad,
     type: 2}
-  deadPlayerMaterial: {fileID: 2100000, guid: 558591ebbe63fc94aa45e7404ebd35ac, type: 2}
+  baseDamagedPlayerMaterial: {fileID: 2100000, guid: 4b428e8457040fe49934e700f022bbad,
+    type: 2}
+  infectedDamagedPlayerMaterial: {fileID: 2100000, guid: 3264a51f0d1f81542bdfcb3788a61682,
+    type: 2}
+  baseDeadPlayerMaterial: {fileID: 2100000, guid: 558591ebbe63fc94aa45e7404ebd35ac,
+    type: 2}
+  infectedDeadPlayerMaterial: {fileID: 2100000, guid: 530c26faf6b6b6e429e0f2c74057d906,
+    type: 2}
   basePlayerShader: {fileID: -6465566751694194690, guid: bbb452cb658707140a17d4162bcd72ae,
     type: 3}
-  damagedPlayerShader: {fileID: -6465566751694194690, guid: fd8ca4da5f7df55468017af32c1cfa6b,
+  infectedPlayerShader: {fileID: -6465566751694194690, guid: 7b6c3b45296911044b06286110ade57d,
     type: 3}
-  deadPlayerShader: {fileID: -6465566751694194690, guid: d19469e9c8072d848b76c6dbce1de4f7,
+  baseDamagedPlayerShader: {fileID: -6465566751694194690, guid: bbb452cb658707140a17d4162bcd72ae,
+    type: 3}
+  infectedDamagedPlayerShader: {fileID: -6465566751694194690, guid: 2cd5a218fa96aec48a9f77d291b99c1f,
+    type: 3}
+  baseDeadPlayerShader: {fileID: -6465566751694194690, guid: d19469e9c8072d848b76c6dbce1de4f7,
+    type: 3}
+  infectedDeadPlayerShader: {fileID: -6465566751694194690, guid: afb519a3e315f5c42b68894de0f2e977,
     type: 3}
   orientation: {fileID: 8054929854358216728, guid: f9f6063a008318a4ab1dea0a76b5ff47,
     type: 3}
   whatIsGravityObject:
     serializedVersion: 2
     m_Bits: 2048
+  firePoint: {fileID: 0}
   gunPistol: {fileID: 4533898798903763665}
   gunShotgun: {fileID: 4385459633073700759}
   gunMelee: {fileID: 772477351956785379}
@@ -642,7 +656,7 @@ PrefabInstance:
     - target: {fileID: 3397226025078683981, guid: aefcd3f0adc27a340bba9a7d0f13a721,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.6567239
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 3397226025078683981, guid: aefcd3f0adc27a340bba9a7d0f13a721,
         type: 3}
@@ -652,7 +666,7 @@ PrefabInstance:
     - target: {fileID: 3397226025078683981, guid: aefcd3f0adc27a340bba9a7d0f13a721,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.4781599
+      value: -0.77
       objectReference: {fileID: 0}
     - target: {fileID: 3397226025078683981, guid: aefcd3f0adc27a340bba9a7d0f13a721,
         type: 3}

@@ -551,6 +551,7 @@ public class ServerSend
             _packet.Write(_sPlayerInfection.currentGun.name);
             _packet.Write(_sPlayerInfection.currentGun.currentAmmo);
             _packet.Write(_sPlayerInfection.currentGun.reserveAmmo);
+            _packet.Write(_sPlayerInfection.isInfected);
 
             SendTCPData(_toClient, _packet);
         }
@@ -675,11 +676,13 @@ public class ServerSend
     /// Tells all clients to respawn a player
     /// </summary>
     /// <param name="_player"> player to be respawned </param>
-    public static void PlayerRespawnedInfection(SPlayer _player)
+    public static void PlayerRespawnedInfection(SPlayer _player, string _gunName)
     {
         using (PackerServerSide _packet = new PackerServerSide((int)ServerPackets.playerRespawned))
         {
             _packet.Write(_player.id);
+            _packet.Write(_player.maxHealth);
+            _packet.Write(_gunName);
 
             SendTCPDataToAll(_packet);
         }

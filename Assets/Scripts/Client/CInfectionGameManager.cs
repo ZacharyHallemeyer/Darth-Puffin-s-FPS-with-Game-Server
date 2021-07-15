@@ -48,7 +48,7 @@ public class CInfectionGameManager : MonoBehaviour
     /// <param name="_position"> player spawn position </param>
     /// <param name="_rotation"> player spawn rotation </param>
     public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation,
-                            string _gunName, int _currentAmmo, int _reserveAmmo)
+                            string _gunName, int _currentAmmo, int _reserveAmmo, bool _isInfected)
     {
         GameObject _player;
         if (_id != ClientClientSide.instance.myId)
@@ -57,7 +57,7 @@ public class CInfectionGameManager : MonoBehaviour
             _player = Instantiate(playerPrefab, _position, _rotation);
             _player.GetComponent<PlayerManager>().Initialize(_id, _username);
             players.Add(_id, _player.GetComponent<PlayerManager>());
-            _player.GetComponent<PlayerActionInfection>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo);
+            _player.GetComponent<PlayerActionInfection>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo, _isInfected);
             playersActionsInfection.Add(_id, _player.GetComponent<PlayerActionInfection>());
             playersActionsInfection[_id].PlayerInitGun(_gunName, _currentAmmo, _reserveAmmo);
         }
@@ -65,7 +65,7 @@ public class CInfectionGameManager : MonoBehaviour
         {
             // Local Player
             _player = Instantiate(localPlayerPrefab, _position, _rotation);
-            _player.GetComponent<PlayerActionInfection>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo);
+            _player.GetComponent<PlayerActionInfection>().Initialize(_id, _gunName, _currentAmmo, _reserveAmmo, _isInfected);
             playersActionsInfection.Add(_id, _player.GetComponent<PlayerActionInfection>());
             _player.GetComponent<PlayerManager>().Initialize(_id, _username);
             players.Add(_id, _player.GetComponent<PlayerManager>());

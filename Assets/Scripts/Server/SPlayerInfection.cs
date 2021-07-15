@@ -12,14 +12,16 @@ public class SPlayerInfection : MonoBehaviour
     public Transform orientation;
     public SPlayer player;
     public float health, maxHealth = 100;
+    public bool isInfected = false;
 
     // Input
     private Vector2 moveDirection;
 
     //Movement
-    public int moveSpeed = 4500;
-    public readonly int crouchMoveSpeed = 3000;
-    public int maxBaseSpeed = 20;
+    private int moveForce, maxGroundSpeed; 
+    public int baseMoveForce = 4500, infectedMoveForce = 6000;
+    public readonly int crouchMoveForce = 3000;
+    public int maxBaseSpeed = 20, maxInfectedSpeed = 30;
     public readonly int maxCrouchSpeed = 10;
     public float counterMovement = 0.175f;
     public float threshold = 0.01f;
@@ -38,7 +40,8 @@ public class SPlayerInfection : MonoBehaviour
     public bool isSliding = false;
 
     //Jumping
-    public float jumpForce = 550f;
+    private float jumpForce;
+    public float jumpBaseForce = 350f, jumpInfectedForce = 400f; 
     private readonly int maxJumps = 2;
     private int jumpsAvaliable = 2;
     public bool isJumping;
@@ -54,7 +57,8 @@ public class SPlayerInfection : MonoBehaviour
     public float wallrunForce;
     public float maxWallRunCameraTilt, wallRunCameraTilt;
     private float currentHandPosition = .15f;
-    public float wallRunSpeed = 100f, maxWallRunSpeed = 40f;
+    public float wallRunForce = 100f, wallBaseRunForce = 100f, wallInfectedRunForce = 125f; 
+    public float maxWallRunSpeed = 40f, maxWallBaseRunSpeed = 40f, maxWallInfectedRunSpeed = 50f;
     public float timeOnWall = 0, maxtimeOnWall = 3f;
     public bool isWallRight, isWallLeft, isWallForward, isWallBackward, isOnWall;
     public Transform gunPosition;
@@ -103,13 +107,31 @@ public class SPlayerInfection : MonoBehaviour
 
     #region Set up
 
-    public void Initialize(int _id, string _username, SPlayer _player)
+    public void Initialize(int _id, string _username, SPlayer _player, bool _isInfected)
     {
         id = _id;
         username = _username;
         player = _player;
         health = maxHealth;
+        isInfected = _isInfected;
         playerScale = transform.localScale;
+
+        if(isInfected)
+        {
+            moveForce = infectedMoveForce;
+            maxGroundSpeed = maxInfectedSpeed;
+            jumpForce = jumpInfectedForce;
+            wallRunForce = wallInfectedRunForce;
+            maxWallRunSpeed = maxWallInfectedRunSpeed;
+        }
+        else
+        {
+            moveForce = baseMoveForce;
+            maxGroundSpeed = maxBaseSpeed;
+            jumpForce = jumpBaseForce;
+            wallRunForce = wallBaseRunForce;
+            maxWallRunSpeed = maxWallBaseRunSpeed;
+        }
 
         SetGunInformation();
     }
@@ -154,8 +176,10 @@ public class SPlayerInfection : MonoBehaviour
         {
             name = "Melee",
             damage = 90,
-            fireRate = .7f,
-            reloadTime = 1f,
+            reserveAmmo = 1,
+            currentAmmo = 1,
+            fireRate = .1f,
+            reloadTime = .1f,
             rightHandPosition = -.3f,
             leftHandPosition = -.3f,
             isMelee = true,
@@ -168,9 +192,16 @@ public class SPlayerInfection : MonoBehaviour
             gunNames[index] = str;
             index++;
         }
-        //currentGun = allGunInformation["Shotgun"];
-        currentGun = allGunInformation["Melee"];
-        secondaryGun = allGunInformation["Pistol"];
+        if(!isInfected)
+        {
+            currentGun = allGunInformation["Shotgun"];
+            secondaryGun = allGunInformation["Pistol"];
+        }
+        else
+        {
+            currentGun = allGunInformation["Melee"];
+            secondaryGun = allGunInformation["Melee"];
+        }
     }
 
     #endregion
@@ -254,10 +285,10 @@ public class SPlayerInfection : MonoBehaviour
         }
         else
         {
-            if (moveDirection.x > 0 && xMag > maxBaseSpeed) moveDirection.x = 0;
-            if (moveDirection.x < 0 && xMag < -maxBaseSpeed) moveDirection.x = 0;
-            if (moveDirection.y > 0 && yMag > maxBaseSpeed) moveDirection.y = 0;
-            if (moveDirection.y < 0 && yMag < -maxBaseSpeed) moveDirection.y = 0;
+            if (moveDirection.x > 0 && xMag > maxGroundSpeed) moveDirection.x = 0;
+            if (moveDirection.x < 0 && xMag < -maxGroundSpeed) moveDirection.x = 0;
+            if (moveDirection.y > 0 && yMag > maxGroundSpeed) moveDirection.y = 0;
+            if (moveDirection.y < 0 && yMag < -maxGroundSpeed) moveDirection.y = 0;
         }
 
         //Some multipliers
@@ -288,14 +319,14 @@ public class SPlayerInfection : MonoBehaviour
         // crouch walking
         if (isCrouching && !isSliding)
         {
-            rb.AddForce(orientation.transform.forward * moveDirection.y * crouchMoveSpeed * Time.deltaTime);
-            rb.AddForce(orientation.transform.right * moveDirection.x * crouchMoveSpeed * Time.deltaTime);
+            rb.AddForce(orientation.transform.forward * moveDirection.y * crouchMoveForce * Time.deltaTime);
+            rb.AddForce(orientation.transform.right * moveDirection.x * crouchMoveForce * Time.deltaTime);
         }
         // Normal movement on ground
         else if (!isOnWall)
         {
-            rb.AddForce(orientation.transform.forward * moveDirection.y * moveSpeed * Time.deltaTime * multiplier * multiplierV);
-            rb.AddForce(orientation.transform.right * moveDirection.x * moveSpeed * Time.deltaTime * multiplier);
+            rb.AddForce(orientation.transform.forward * moveDirection.y * moveForce * Time.deltaTime * multiplier * multiplierV);
+            rb.AddForce(orientation.transform.right * moveDirection.x * moveForce * Time.deltaTime * multiplier);
         }
     }
 
@@ -450,18 +481,18 @@ public class SPlayerInfection : MonoBehaviour
         //Slow down sliding
         if (isCrouching)
         {
-            rb.AddForce(moveSpeed * Time.deltaTime * -rb.velocity.normalized * slideCounterMovement);
+            rb.AddForce(moveForce * Time.deltaTime * -rb.velocity.normalized * slideCounterMovement);
             return;
         }
 
         //Counter movement
         if (Mathf.Abs(mag.x) > threshold && Mathf.Abs(x) < 0.05f || (mag.x < -threshold && x > 0) || (mag.x > threshold && x < 0))
         {
-            rb.AddForce(moveSpeed * orientation.transform.right * Time.deltaTime * -mag.x * counterMovement);
+            rb.AddForce(moveForce * orientation.transform.right * Time.deltaTime * -mag.x * counterMovement);
         }
         if (Mathf.Abs(mag.y) > threshold && Mathf.Abs(y) < 0.05f || (mag.y < -threshold && y > 0) || (mag.y > threshold && y < 0))
         {
-            rb.AddForce(moveSpeed * orientation.transform.forward * Time.deltaTime * -mag.y * counterMovement);
+            rb.AddForce(moveForce * orientation.transform.forward * Time.deltaTime * -mag.y * counterMovement);
         }
 
         //Limit diagonal running. This will also cause a full stop if sliding fast and un-crouching, so not optimal.
@@ -516,14 +547,14 @@ public class SPlayerInfection : MonoBehaviour
         // Move player
         if (moveDirection.x != 0 || moveDirection.y != 0)
         {
-            rb.AddForce(orientation.transform.forward * moveDirection.y * wallRunSpeed * Time.deltaTime, ForceMode.Impulse);
-            rb.AddForce(orientation.transform.right * moveDirection.x * wallRunSpeed * Time.deltaTime, ForceMode.Impulse);
+            rb.AddForce(orientation.transform.forward * moveDirection.y * wallRunForce * Time.deltaTime, ForceMode.Impulse);
+            rb.AddForce(orientation.transform.right * moveDirection.x * wallRunForce * Time.deltaTime, ForceMode.Impulse);
 
             // Stick player to wall
             if (isWallRight)
-                rb.AddForce(orientation.right * wallRunSpeed * 1.3f * Time.deltaTime, ForceMode.Impulse);
+                rb.AddForce(orientation.right * wallRunForce * 1.3f * Time.deltaTime, ForceMode.Impulse);
             if (isWallLeft)
-                rb.AddForce(-orientation.right * wallRunSpeed * 1.3f * Time.deltaTime, ForceMode.Impulse);
+                rb.AddForce(-orientation.right * wallRunForce * 1.3f * Time.deltaTime, ForceMode.Impulse);
             if (isWallForward)
                 rb.AddForce(orientation.forward * wallrunForce * 1.3f *Time.deltaTime, ForceMode.Impulse);
             if (isWallBackward)
@@ -793,6 +824,7 @@ public class SPlayerInfection : MonoBehaviour
 
         if (player.health <= 0)
         {
+            Die();
             player.health = 0;
             player.currentDeaths++;
             ServerSend.UpdatePlayerDeathStats(id, player.currentDeaths);
@@ -808,6 +840,25 @@ public class SPlayerInfection : MonoBehaviour
         ServerSend.PlayerHealthInfection(player);
     }
 
+    private void Die()
+    {
+        if(!isInfected)
+        {
+            SInfectionGameManager.humans.Remove(id);
+            SInfectionGameManager.infected.Add(id, this);
+            SInfectionGameManager.CheckHumansLeft();
+            isInfected = true;
+            currentGun = allGunInformation["Melee"];
+            secondaryGun = allGunInformation["Melee"];
+
+            moveForce = infectedMoveForce;
+            maxGroundSpeed = maxInfectedSpeed;
+            jumpForce = jumpInfectedForce;
+            wallRunForce = wallInfectedRunForce;
+            maxWallRunSpeed = maxWallInfectedRunSpeed;
+        }
+    }
+
 
     /// <summary>
     /// Respawns player after 5 seconds
@@ -818,7 +869,7 @@ public class SPlayerInfection : MonoBehaviour
 
         health = maxHealth;
         player.health = player.maxHealth;
-        ServerSend.PlayerRespawnedInfection(player);
+        ServerSend.PlayerRespawnedInfection(player, currentGun.name);
     }
 
     #endregion

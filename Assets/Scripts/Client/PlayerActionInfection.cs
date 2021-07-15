@@ -16,13 +16,15 @@ public class PlayerActionInfection : MonoBehaviour
     public bool isCrouching = false;
 
     // Materials
-    public Material basePlayerMaterial;
-    public Material damagedPlayerMaterial;
-    public Material deadPlayerMaterial;
+    private Material playerMaterial, damagedPlayerMaterial, deadPlayerMaterial;
+    public Material basePlayerMaterial, infectedPlayerMaterial;
+    public Material baseDamagedPlayerMaterial, infectedDamagedPlayerMaterial;
+    public Material baseDeadPlayerMaterial, infectedDeadPlayerMaterial;
 
-    public Shader basePlayerShader;
-    public Shader damagedPlayerShader;
-    public Shader deadPlayerShader;
+    private Shader playerShader, damagedPlayerShader, deadPlayerShader;
+    public Shader basePlayerShader, infectedPlayerShader;
+    public Shader baseDamagedPlayerShader, infectedDamagedPlayerShader;
+    public Shader baseDeadPlayerShader, infectedDeadPlayerShader;
 
     // Movement
     public Transform orientation;
@@ -73,13 +75,45 @@ public class PlayerActionInfection : MonoBehaviour
     /// <param name="_currentAmmo"> current ammo </param>
     /// <param name="_reserveAmmo"> current reserve ammo </param>
     /// <param name="_maxGrappleTime"> max grapple time </param>
-    public void Initialize(int _id, string _gunName, int _currentAmmo, int _reserveAmmo)
+    public void Initialize(int _id, string _gunName, int _currentAmmo, int _reserveAmmo, bool _isInfected)
     {
         id = _id;
         SetGunInformation();
         PlayerInitGun(_gunName, _currentAmmo, _reserveAmmo);
-        if (gameObject.name.Substring(0, 5) != "Local")
+        if(_isInfected)
+        {
+            playerMaterial = infectedPlayerMaterial;
+            damagedPlayerMaterial = infectedDamagedPlayerMaterial;
+            deadPlayerMaterial = infectedDeadPlayerMaterial;
+            playerShader = infectedPlayerShader;
+            damagedPlayerShader = infectedDamagedPlayerShader;
+            deadPlayerShader = infectedDeadPlayerShader;
+        }
+        else
+        {
+            playerMaterial = basePlayerMaterial;
+            damagedPlayerMaterial = baseDamagedPlayerMaterial;
+            deadPlayerMaterial = baseDeadPlayerMaterial;
+            playerShader = basePlayerShader;
+            damagedPlayerShader = baseDamagedPlayerShader;
+            deadPlayerShader = baseDeadPlayerShader;
+        }
+        GetComponent<MeshRenderer>().material = playerMaterial;
+        GetComponent<MeshRenderer>().material.shader = playerShader;
+
+        if (gameObject.name[0] != 'L')
             enabled = false;
+    }
+    
+    public void MakeInfected(string _gunName)
+    {
+        playerMaterial = infectedPlayerMaterial;
+        damagedPlayerMaterial = infectedDamagedPlayerMaterial;
+        deadPlayerMaterial = infectedDeadPlayerMaterial;
+        playerShader = infectedPlayerShader;
+        damagedPlayerShader = infectedDamagedPlayerShader;
+        deadPlayerShader = infectedDeadPlayerShader;
+        PlayerInitGun(_gunName, 0, 0);
     }
 
     private void Awake()
@@ -333,6 +367,7 @@ public class PlayerActionInfection : MonoBehaviour
     public void PlayerStartSwitchWeaponAnim(string _newGunName, int _currentAmmo, int _reserveAmmo)
     {
         isAnimInProgress = true;
+        PlayerInitGun(_newGunName, _currentAmmo, _reserveAmmo);
 
         foreach (GunInformation _gun in allGunInformation.Values)
         {
@@ -423,6 +458,8 @@ public class PlayerActionInfection : MonoBehaviour
     {
         foreach (GunInformation _gunInfo in allGunInformation.Values)
         {
+            if (allGunInformation[_gunInfo.name].gunContainer.activeSelf == true)
+                allGunInformation[_gunInfo.name].gunContainer.SetActive(false);
             if (_gunName == _gunInfo.name)
                 currentGun = _gunInfo;
         }
@@ -459,6 +496,22 @@ public class PlayerActionInfection : MonoBehaviour
 
     #endregion
 
+    public void Die(int _otherPlayerId)
+    {
+        CInfectionGameManager.playersActionsInfection[id].GetComponent<MeshRenderer>().material = deadPlayerMaterial;
+        CInfectionGameManager.playersActionsInfection[id].GetComponent<MeshRenderer>().material.shader = deadPlayerShader;
+    }
+
+    /// <summary>
+    /// Respawn animation and set health
+    /// </summary>
+    public void Respawn(int _health)
+    {
+        CInfectionGameManager.playersActionsInfection[id].GetComponent<MeshRenderer>().material = playerMaterial;
+        CInfectionGameManager.playersActionsInfection[id].GetComponent<MeshRenderer>().material.shader = playerShader;
+        CInfectionGameManager.players[id].health = _health;
+    }
+
     /// <summary>
     /// Show other player take damage animation
     /// </summary>
@@ -466,12 +519,14 @@ public class PlayerActionInfection : MonoBehaviour
     public void OtherPlayerTakenDamage(int _otherPlayerId)
     {
         CInfectionGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = damagedPlayerMaterial;
+        CInfectionGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material.shader = damagedPlayerShader;
         StartCoroutine(OtherPlayerTakeDamageHelper(_otherPlayerId));
     }
 
     public IEnumerator OtherPlayerTakeDamageHelper(int _otherPlayerId)
     {
         yield return new WaitForSeconds(.5f);
-        CInfectionGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = basePlayerMaterial;
+        CInfectionGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material = playerMaterial;
+        CInfectionGameManager.players[_otherPlayerId].GetComponent<MeshRenderer>().material.shader = playerShader;
     }
 }

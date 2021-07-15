@@ -276,14 +276,27 @@ public class ClientServerSide
 
     /// <summary>Sends the client into the game and informs other clients of the new player.</summary>
     /// <param name="_playerName">The username of the new player.</param>
-    public void SendIntoGameInfection()
+    public void SendIntoGameInfection(int[] _infectedIds)
     {
+        bool _isInfected = false;
         player = NetworkManager.instance.InstantiatePlayerInfection();
         player.Initialize(id, userName);
+        for(int i = 0; i < _infectedIds.Length; i++)
+        {
+            Debug.Log("I: " + i + " _infectedIds[i] : " + _infectedIds[i] + " Id: " + id);
+            if (_infectedIds[i] == id)
+                _isInfected = true;
+        }
+
         sPlayerInfection = player.sPlayerInfection;
-        sPlayerInfection.Initialize(id, userName, player);
+        sPlayerInfection.Initialize(id, userName, player, _isInfected);
         Server.clients[id].player = player;
         Server.clients[id].sPlayerInfection = sPlayerInfection;
+
+        if (_isInfected)
+            SInfectionGameManager.infected.Add(id, Server.clients[id].sPlayerInfection);
+        else
+            SInfectionGameManager.humans.Add(id, Server.clients[id].sPlayerInfection);
 
         // Send all players to the new player
         foreach (ClientServerSide _client in Server.clients.Values)
